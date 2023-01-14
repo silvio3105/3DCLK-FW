@@ -43,6 +43,15 @@ uint8_t initFlags = 0;
 uint8_t resetFlags = 0; /**< @brief Reset flags from RCC:CSR. */
 
 
+// ----- STATIC FUNCTION DECLARATIONS
+/**
+ * @brief Get reset reason from RCC.
+ * 
+ * @return No return value.
+ */
+static void getResetReason(void);
+
+
 // ----- APPLICATION ENTRY POINT
 int main(void)
 {
@@ -116,14 +125,14 @@ int main(void)
 
 	while (1)
 	{
-		/*TnH.clear();
+		TnH.clear();
 		TnH.measure(SHT40_meas_t::TRH_H);
 
 		x = TnH.rh(rh);
 		logf("RH[%d]: %d%%\n", x, rh);
 
 		x = TnH.temperature(temp);
-		logf("T[%d]: %d°C\n\n", x, temp);*/
+		logf("T[%d]: %d°C\n\n", x, temp);
 
 		for(uint8_t i = 0; i < 13; i++)
 		{
