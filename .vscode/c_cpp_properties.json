@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        {
+            "name": "STM32L051xx",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "USE_FULL_LL_DRIVER",
+                "STM32L051xx"
+            ],
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-arm",
+            "compilerPath": "${env:ARM-GCC}/arm-none-eabi-gcc.exe",
+            "compilerArgs": [
+                "-mcpu=cortex-m0plus",
+                "-mthumb"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true
+            }
+        }
+    ],
+    "version": 4
+}

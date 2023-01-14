@@ -1,0 +1,1 @@
+[{"node":"DMA1.CNDTR5","expanded":true,"format":0},{"node":"DMA1.CPAR5","expanded":true,"format":0},{"node":"DMA1.CMAR5","expanded":true,"format":0},{"node":"I2C1.CR1","expanded":true,"format":0},{"node":"I2C1.ISR","expanded":true,"format":0},{"node":"TIM2","expanded":true,"format":0,"pinned":false},{"node":"TIM2.CR1","expanded":true,"format":0}]
