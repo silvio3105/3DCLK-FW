@@ -43,6 +43,7 @@ static void UART2Out(const char* buffer, const uint16_t len);
 
 // ----- OBJECTS
 #ifdef DEBUG
+// Logger object for debugging
 sStd::Logger<LOG_BUFF> Serial = sStd::Logger<LOG_BUFF>(UART2Out, "[DEBUG] ");
 #endif // DEBUG
 

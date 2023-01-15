@@ -28,6 +28,12 @@ This License shall be included in all methodal textual files.
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
+/** \addtogroup Config
+ * 
+ * Firmware configuration file.
+ * @{
+*/
+
 // ----- VERSIONS
 // SOFTWARE VERSION
 #define FW_VER						"3DCLK v1.0rc1" /**< @brief Firmware version. 16 chars max! */
@@ -89,6 +95,14 @@ This License shall be included in all methodal textual files.
 #define BLE_RST_GPIO_Port			GPIOB /**< @brief GPIO port for BLE RST. */
 #endif // HW_REV
 
+// WATCHDOG
+#if (HW_REV == HW_3DCLK_MAIN_rev1)
+#define DOG_RELOAD					4095 /**< @brief Watchdog reload value. */
+#define DOG_PRESCALER				iDog_prescaler_t::DIV256 /**< @brief Watchdog clock prescaler. */
+#define DOG_MODE					iDog_mode_t::DBG_HALT /**< @brief Watchdog mode. */
+#define DOG_HANDLE					IWDG /**< @brief Watchdog handle */
+#endif // HW_REV
+
 // BUFFERS
 #ifdef DEBUG
 #define LOG_BUFF					128 /**< @brief Buffer size in bytes for logger. */
@@ -120,7 +134,7 @@ This License shall be included in all methodal textual files.
 
 #if (TNH_SENSOR == SHT40_AD)
 #define TNH_SENS_ADDR				0x44 /**< @brief I2C address for SHT40-AD temperature sensor. */
-#elif (TNH_SENSOR == SHT_B)
+#elif (TNH_SENSOR == SHT40_B)
 #define TNH_SENS_ADDR				0x45 /**< @brief I2C address for SHT40-B sensor. */
 #endif // TNH_SENSOR
 
@@ -130,6 +144,7 @@ This License shall be included in all methodal textual files.
 #error "Macro HW_REV not valid!"
 #endif // HW_REV
 
+/**@ }*/
 
 #endif // _CONFIG_H_
 

@@ -28,6 +28,12 @@ This License shall be included in all methodal textual files.
 #ifndef _PROGLED_H_
 #define _PROGLED_H_
 
+/** \addtogroup ProgLED
+ * 
+ * Frameworkelss library for programmable RGB LEDs. 
+ * @{
+*/
+
 // ----- CONFIGURATIONS
 /**
  * @brief Use FPU for color format conversions.
@@ -43,12 +49,6 @@ This License shall be included in all methodal textual files.
 #if USE_FPU == 1
 #include			<math.h>
 #endif // USE_FPU
-
-/** \addtogroup ProgLED
- * 
- * Frameworkelss library for programmable RGB LEDs. 
- * @{
-*/
 
 // ----- DEFINES
 // RETURN CODES

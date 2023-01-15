@@ -94,7 +94,8 @@ Core/Src/sStd.cpp \
 Core/Src/SHT40.cpp \
 Core/Src/LED.cpp \
 Core/Src/TnH.cpp \
-Core/Src/Log.cpp
+Core/Src/Log.cpp \
+Core/Src/sWatchdog.cpp
 
 
 # ASSEMBLER UNITS

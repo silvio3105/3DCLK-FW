@@ -31,6 +31,7 @@ This License shall be included in all methodal textual files.
 #include			"sStd.h"
 #include			"SHT40.h"
 #include			"ProgLED.h"
+#include			"sWatchdog.h"
 
 #include			"LED.h"
 #include			"TnH.h"
@@ -59,6 +60,10 @@ const Build buildInfo __attribute__((section(".buildData"))) = {
 uint8_t initFlags = 0;
 uint8_t resetFlags = 0; /**< @brief Reset flags from RCC:CSR. */
 
+// ----- OBJECTS
+// Watchdog object
+iDog Dog(DOG_HANDLE, DOG_RELOAD, DOG_PRESCALER, DOG_MODE);
+
 
 // ----- STATIC FUNCTION DECLARATIONS
 /**
@@ -82,6 +87,11 @@ int main(void)
 
 	// Configure system clock
 	SystemClock_Config();
+
+	// Watchdog init (if not debug build)
+	#ifndef DEBUG
+	Dog.start();
+	#endif // DEBUG  	
 
 	// GPIO init
 	MX_GPIO_Init();
@@ -110,10 +120,6 @@ int main(void)
 	delay(1000);
 	#endif // DEBUG
 
-	// Watchdog init (if not debug build)
-	#ifndef DEBUG
-	MX_IWDG_Init();
-	#endif // DEBUG  
 
 	// Firmware and hardware info
 	logf("FW: %s\n", buildInfo.FW);
@@ -151,6 +157,21 @@ int main(void)
 		x = TnH.temperature(temp);
 		logf("T[%d]: %d°C\n\n", x, temp);
 
+		/*for (uint8_t b = 0; b < 255; b++)
+		{
+			for (uint8_t g = 0; g < 255; g++)
+			{
+				for (uint8_t r = 0; r < 255; r++)
+				{
+					LEDs.rgb(r, g, b);
+					LEDs.update(LED_LINE);
+					delay(2);
+				}			
+			}			
+		}
+
+		delay(5000);*/
+
 		for(uint8_t i = 0; i < 13; i++)
 		{
 			LEDs.brightness(i);
@@ -171,7 +192,7 @@ int main(void)
 
 		// Feed the dog!
 		#ifndef DEBUG
-		LL_IWDG_ReloadCounter(IWDG);
+		Dog.feed();
 		#endif // DEBUG
 	}
 }

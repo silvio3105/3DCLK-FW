@@ -42,9 +42,6 @@ void MX_RTC_Init(void);
 void MX_TIM2_Init(void);
 void MX_USART1_UART_Init(void);
 void MX_USART2_UART_Init(void);
-#ifndef DEBUG
-void MX_IWDG_Init(void);
-#endif // DEBUG
 
 #endif // _INIT_H_
 
