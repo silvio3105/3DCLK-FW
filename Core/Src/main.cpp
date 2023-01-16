@@ -74,6 +74,8 @@ iDog Dog(DOG_HANDLE, DOG_RELOAD, DOG_PRESCALER, DOG_MODE);
 static void getResetReason(void);
 
 
+
+
 // ----- APPLICATION ENTRY POINT
 int main(void)
 {
@@ -120,6 +122,11 @@ int main(void)
 	delay(1000);
 	#endif // DEBUG
 
+	// Set logger status if not DEBUG build
+	#ifdef DEBUG
+	Serial.status(sStd::logStatus_t::LOG_ON);
+	#endif // DEBUG
+
 
 	// Firmware and hardware info
 	logf("FW: %s\n", buildInfo.FW);
@@ -145,6 +152,12 @@ int main(void)
 	uint8_t x = 100;
 	uint8_t rh = 0;
 	int16_t temp = 0;
+	uint8_t chIdx = 0;
+
+	// Feed the dog!
+	#ifndef DEBUG
+	Dog.feed();
+	#endif // DEBUG	
 
 	while (1)
 	{
@@ -157,38 +170,12 @@ int main(void)
 		x = TnH.temperature(temp);
 		logf("T[%d]: %d°C\n\n", x, temp);
 
-		/*for (uint8_t b = 0; b < 255; b++)
-		{
-			for (uint8_t g = 0; g < 255; g++)
-			{
-				for (uint8_t r = 0; r < 255; r++)
-				{
-					LEDs.rgb(r, g, b);
-					LEDs.update(LED_LINE);
-					delay(2);
-				}			
-			}			
-		}
+		ledPrint((const char*)&charBitmap[chIdx++].ch);
+		if (chIdx == 34) chIdx = 0;
+		toggleSemicolon();
+		LED_UPDATE;
 
-		delay(5000);*/
-
-		for(uint8_t i = 0; i < 13; i++)
-		{
-			LEDs.brightness(i);
-			LEDs.update(LED_LINE);
-			delay(10);
-		}
-
-		delay(1000);
-
-		for(int8_t i = 13; i > -1; i--)
-		{
-			LEDs.brightness(i);
-			LEDs.update(LED_LINE);
-			delay(10);
-		}		
-
-		delay(1000);
+		delay(250);
 
 		// Feed the dog!
 		#ifndef DEBUG
@@ -199,9 +186,12 @@ int main(void)
 
 
 // ----- FUNCTION DEFINITIONS
-void getResetReason(void)
+static void getResetReason(void)
 {
+	// Get reset flags from control status register
 	resetFlags = (RCC->CSR & (0xFF << 24)) >> 24;
+
+	// Reset control status register
 	RCC->CSR |= RCC_CSR_RMVF;
 }
 

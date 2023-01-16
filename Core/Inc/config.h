@@ -38,12 +38,11 @@ This License shall be included in all methodal textual files.
 // SOFTWARE VERSION
 #define FW_VER						"3DCLK v1.0rc1" /**< @brief Firmware version. 16 chars max! */
 
-// HARDWARE REVISIONS
-#define HW_3DCLK_MAIN_rev1			1 /**< @brief Hardware ID for rev1 */
+// HARDWARE MAIN REVISIONS
+#define HW_3DCLK_MAIN_rev1			1 /**< @brief Hardware ID for rev1. */
 
-
-// ----- HARDWARE SELECTION
-#define HW_REV						HW_3DCLK_MAIN_rev1 /**< @brief Macro for hardware selection. */
+// HARDWARE LED REVISIONS
+#define HW_3DCLK_LED_rev1			1 /**< @brief Hardware ID for LED rev1. */
 
 // LED CHIPS
 #define IN_PI55TAT					1 /**< @brief IN-PI55TAT LED chip. */
@@ -51,6 +50,14 @@ This License shall be included in all methodal textual files.
 // TnH SENSORS
 #define SHT40_AD					1 /**< @brief SHT40-AD temperature and humidity sensor. */
 #define SHT40_B						2 /**< @brief SHT40-B temperature and humidity sensor. */
+
+
+// ----- HARDWARE SELECTION
+// MAIN SELECTION
+#define HW_REV						HW_3DCLK_MAIN_rev1 /**< @brief Macro for hardware selection. */
+
+// LED SELECTION
+#define LED_REV						HW_3DCLK_LED_rev1 /**< @brief Macro for LED hardware selection. */
 
 
 // ----- HARDWARE CONFIGURATION
@@ -61,6 +68,24 @@ This License shall be included in all methodal textual files.
 #define LED_CHIP					IN_PI55TAT /**< @brief LED chip used by selected hardare version. */
 #define TNH_SENSOR					SHT40_AD /**< @brief Temperature & humidity sensor used by selected hardware version. */
 #endif // HW_REV
+
+// HW_3DCLK_LED_rev1 LED configuration
+#if (LED_REV == HW_3DCLK_LED_rev1)
+#define LED_IDX_DOT						0 /**< @brief Index of first LED from semicolon. */
+#define LED_IDX_1						2 /**< @brief Index of first LED from first LED PCB. */
+#define LED_IDX_2						9 /**< @brief Index of first LED from second LED PCB. */
+#define LED_IDX_3						16 /**< @brief Index of first LED from third LED PCB. */
+#define LED_IDX_4						23 /**< @brief Index of first LED from fourth LED PCB. */
+
+// LED SEGMENTS
+#define LED_S1							(1 << 0) /**< @brief Macro for enabling LED segment 1. */
+#define LED_S2							(1 << 1) /**< @brief Macro for enabling LED segment 2. */
+#define LED_S3							(1 << 2) /**< @brief Macro for enabling LED segment 3. */
+#define LED_S4							(1 << 3) /**< @brief Macro for enabling LED segment 4. */
+#define LED_S5							(1 << 4) /**< @brief Macro for enabling LED segment 5. */
+#define LED_S6							(1 << 5) /**< @brief Macro for enabling LED segment 6. */
+#define LED_S7							(1 << 6) /**< @brief Macro for enabling LED segment 7. */
+#endif // LED_REV
 
 
 // ----- CONFIGURATION

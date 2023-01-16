@@ -35,15 +35,6 @@ This License shall be included in all methodal textual files.
 #include			"Log.h"
 
 
-// ----- DEFINES
-/**
- * @brief Snippet for calling LED line update.
- * 
- */
-#define LED_UPDATE \
-	LEDs.update(LED_LINE)
-
-
 // ----- FUNCTION DECLARATIONS
 /**
  * @brief Handler for updating LED line.
@@ -61,6 +52,75 @@ static void ledPWMStart(int8_t bit);
  */
 static void ledPWMStop(int8_t bit);
 
+/**
+ * @brief Get character bitmap for LED 7-segment display.
+ * 
+ * @param c Character to search for bitmap.
+ * @return Character bitmap. 
+ */
+static uint8_t getCharBitmap(const char c);
+
+
+// ----- VARIABLES
+/**
+ * @brief Character bitmap array.
+ * 
+ * @warning All letter are upper-case.
+ */
+const ledChar charBitmap[] = {
+	// NUMBERS
+	{ '0', (LED_S1 | LED_S2 | LED_S3 | LED_S4 | LED_S5 | LED_S7) },
+	{ '1', (LED_S5 | LED_S7) },
+	{ '2', (LED_S1 | LED_S2 | LED_S4 | LED_S5 | LED_S6) },
+	{ '3', (LED_S1 | LED_S4 | LED_S5 | LED_S6 | LED_S7) },
+	{ '4', (LED_S3 | LED_S5 | LED_S6 | LED_S7) },
+	{ '5', (LED_S1 | LED_S3 | LED_S4 | LED_S6 | LED_S7) },
+	{ '6', (LED_S1 | LED_S2 | LED_S3 | LED_S4 | LED_S6 | LED_S7) },
+	{ '7', (LED_S4 | LED_S5 | LED_S7) },
+	{ '8', (LED_S1 | LED_S2 | LED_S3 | LED_S4 | LED_S5 | LED_S6 | LED_S7) },
+	{ '9', (LED_S1 | LED_S3 | LED_S4 | LED_S5 | LED_S6 | LED_S7) },
+
+	// LETTERS
+	{ 'A', (LED_S2 | LED_S3 | LED_S4 | LED_S5 | LED_S6 | LED_S7) },
+	{ 'B', (LED_S1 | LED_S2 | LED_S3 | LED_S6 | LED_S7) },
+	{ 'C', (LED_S1 | LED_S2 | LED_S3 | LED_S4) },
+	{ 'D', (LED_S1 | LED_S2 | LED_S5 | LED_S6 | LED_S7) },
+	{ 'E', (LED_S1 | LED_S2 | LED_S3 | LED_S4 | LED_S6) },
+	{ 'F', (LED_S2 | LED_S3 | LED_S4 | LED_S6) },
+	{ 'H', (LED_S2 | LED_S3 | LED_S5 | LED_S6 | LED_S7) },
+	{ 'I', (LED_S2 | LED_S3) },
+	{ 'J', (LED_S1 | LED_S5 | LED_S7) },
+	{ 'L', (LED_S1 | LED_S2 | LED_S3) },
+	{ 'N', (LED_S2 | LED_S3 | LED_S4 | LED_S5 | LED_S7) },
+	{ 'O', (LED_S1 | LED_S2 | LED_S3 | LED_S4 | LED_S5 | LED_S7) },
+	{ 'P', (LED_S2 | LED_S3 | LED_S4 | LED_S5 | LED_S6) },
+	{ 'R', (LED_S2 | LED_S6) },
+	{ 'S', (LED_S1 | LED_S3 | LED_S4 | LED_S6 | LED_S7) },
+	{ 'U', (LED_S1 | LED_S2 | LED_S3 | LED_S5 | LED_S7) },
+	{ 'Y', (LED_S1 | LED_S3 | LED_S5 | LED_S6 | LED_S7) },
+	{ 'Z', (LED_S1 | LED_S2 | LED_S4 | LED_S5 | LED_S6) },
+	{ 'T', (LED_S1 | LED_S2 | LED_S3 | LED_S6) },
+	{ 'G', (LED_S1 | LED_S2 | LED_S3 | LED_S4 | LED_S7) },
+	{ 'V', (LED_S2 | LED_S3 | LED_S5 | LED_S6) },
+
+	// SYMBOLS
+	{ '-', (LED_S6) },
+	{ '\\', (LED_S3 | LED_S6 | LED_S7) },
+	{ '/', (LED_S2 | LED_S5 | LED_S6) }
+};
+
+/**
+ * @brief Array with start start indexes for each LED PCB.
+ * 
+ * @warning Array order must be: Dot, LED1, LED2, LED3 & LED4!
+ */
+uint8_t ledCharIdx[5] = {
+	LED_IDX_DOT,
+	LED_IDX_1,
+	LED_IDX_2,
+	LED_IDX_3,
+	LED_IDX_4
+};
 
 // ----- OBJECTS
 /**
@@ -114,6 +174,7 @@ static void ledPWMStart(int8_t bit)
 	DMA1_Channel5->CCR |=  DMA_CCR_EN;
 
 	// TIM2 PWM
+	// SOON: Add comments for lines below
 	TIM2->CCER &= ~TIM_CCER_CC1E;
 	TIM2->CCER |= TIM_CCER_CC1E;
 
@@ -128,6 +189,19 @@ static void ledPWMStart(int8_t bit)
 static void ledPWMStop(int8_t bit)
 {
 	log("LED DMA PWM Stopped\n");
+}
+
+static uint8_t getCharBitmap(const char c)
+{
+	// Loop through character bitmap array
+	for (uint8_t i = 0; i < SSTD_ARRAY(charBitmap); i++)
+	{
+		// If wanted character is found in bitmap array return its bitmap
+		if (charBitmap[i].ch == c) return charBitmap[i].bitmap;
+	}
+
+	// If bitmap is not found, return _
+	return LED_S1;
 }
 
 void ledInit(void)
@@ -146,7 +220,10 @@ void ledInit(void)
 			SSTD_BIT_SET(initFlags, INIT_LED_POS);
 
 			// SOON: Test
-			LEDs.rgb(ProgLED_rgb_t::NEON_GREEN);
+			LEDs.rgb(ProgLED_rgb_t::ORANGE, 42);
+			LEDs.led[LED_IDX_DOT].rgb(0xFF0000, 42);
+			LEDs.led[LED_IDX_DOT + 1].rgb(0xFF0000, 42);
+
 			LED_UPDATE;
 			break;
 		}
@@ -163,6 +240,32 @@ void ledInit(void)
 			break;
 		}
 	}	
+}
+
+void ledPrint(const char* c)
+{
+	char bitmap = 0;
+
+	// Loop through input four characters
+	for (uint8_t i = 1; i < 2; i++) // i < 5
+	{
+		// Get bitmap for character
+		bitmap = getCharBitmap(c[i - 1]);
+
+		// Turn on or off LEDs using character bitmap
+		for (uint8_t bIdx = 0; bIdx < 8; bIdx++)
+		{
+			if (SSTD_BIT(bitmap, bIdx)) LEDs.led[ledCharIdx[i] + bIdx].on();
+				else LEDs.led[ledCharIdx[i] + bIdx].off();
+		}
+	}
+}
+
+void toggleSemicolon(void)
+{
+	// Toggle semicolon LEDs
+	LEDs.led[LED_IDX_DOT].toggle();
+	LEDs.led[LED_IDX_DOT + 1].toggle();
 }
 
 // END WITH NEW LINE

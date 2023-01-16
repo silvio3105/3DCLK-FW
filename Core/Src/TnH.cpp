@@ -38,6 +38,13 @@ static void I2C1write(uint8_t addr, uint8_t* data, uint8_t len, uint16_t d);
 
 // ----- OBJECTS
 #if (TNH_SENSOR == SHT40_AD) || (TNH_SENSOR == SHT40_B)
+/**
+ * @brief SHT40 sensor object.
+ * 
+ * \c TNH_SENS_ADDR Sensor I2C address.
+ * \c I2C1read Function for handling I2C1 reads.
+ * \c I2C1write Function for handling I2C1 writes.
+ */
 SHT40 TnH = SHT40(TNH_SENS_ADDR, I2C1read, I2C1write);
 #endif // TNH_SENSOR
 
@@ -162,6 +169,5 @@ void tnhInit(void)
 		}
 	}	
 }
-
 
 // END WITH NEW LINE

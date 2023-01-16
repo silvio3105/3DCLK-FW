@@ -35,6 +35,28 @@ This License shall be included in all methodal textual files.
 #include			<stdint.h>
 
 
+// ----- DEFINES
+/**
+ * @brief Snippet for calling LED line update.
+ * 
+ */
+#define LED_UPDATE \
+	LEDs.update(LED_LINE)
+
+
+// ----- STRUCTS
+/**
+ * @brief Struct representing single 7-segment character.
+ * 
+ * @note Struct is aligned by 2 bytes.
+ */
+struct ledChar
+{
+	const char ch = '\0'; /**< @brief 7-segment character. */
+	const uint8_t bitmap = 0b00000000; /**< @brief Bitmap of \ref ch character(LSB->MSB). */
+} __attribute__((packed, aligned(2)));
+
+
 // ----- FUNCTION DECLARATIONS
 /**
  * @brief LED line init.
@@ -43,9 +65,29 @@ This License shall be included in all methodal textual files.
  */
 void ledInit(void);
 
+/**
+ * @brief Print four characters to 7-segment display.
+ * 
+ * @param c Pointer to string of four characters.
+ * @return No return value.
+ * 
+ * @warning Input string must be four characters long.
+ * @warning No NULL character is needed.
+ * @warning All characters must be written in upper-case.
+ */
+void ledPrint(const char* c);
+
+/**
+ * @brief Toggle semicolon LEDs.
+ * 
+ * @return No return value.
+ */
+void toggleSemicolon(void);
+
 
 // ----- EXTERNS
 extern ProgLED<LEDS, LED_FORMAT> LEDs;
+extern const ledChar charBitmap[]; // SOON: Test
 
 
 #endif // _LED_H_
