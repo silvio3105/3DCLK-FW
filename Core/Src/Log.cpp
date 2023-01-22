@@ -31,6 +31,7 @@ This License shall be included in all methodal textual files.
 
 
 // ----- FUNCTION DECLARATIONS
+#ifdef DEBUG
 /**
  * @brief Handler for transmitting characters over UART.
  * 
@@ -39,6 +40,7 @@ This License shall be included in all methodal textual files.
  * @return No return value.
  */
 static void UART2Out(const char* buffer, const uint16_t len);
+#endif // DEBUG
 
 
 // ----- OBJECTS

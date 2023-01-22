@@ -48,7 +48,9 @@ This License shall be included in all methodal textual files.
 
 
 // ----- EXTERNS
+#ifdef DEBUG
 extern sStd::Logger<LOG_BUFF> Serial;
+#endif // DEBUG
 
 
 #endif // _LOG_H_

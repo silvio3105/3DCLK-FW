@@ -135,7 +135,6 @@ ProgLED<LEDS, LED_FORMAT> LEDs = ProgLED<LEDS, LED_FORMAT>(ledPWMStart, ledPWMSt
 
 
 // ----- EXTERNS
-extern sStd::Logger<LOG_BUFF> Serial;
 extern uint8_t initFlags;
 
 
