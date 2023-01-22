@@ -45,6 +45,17 @@ static char* findToken(char* input, char sep, char sepCnt, const uint8_t retNull
 
 
 // ----- FUNCTIONS DEFINITIONS
+// CONVERSION FUNCTIONS
+uint8_t sStd::dec2BCD(uint8_t num)
+{
+    return SSTD_DEC2BCD_8(num);
+}
+
+uint8_t sStd::BCD2dec(uint8_t num)
+{
+	return SSTD_BCD2DEC_8(num);
+}
+
 // STRING MANIPULATION FUNCTIONS DEFINITIONS
 char* sStd::tok(char* input, char separator)
 {

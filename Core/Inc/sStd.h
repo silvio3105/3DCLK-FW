@@ -69,6 +69,9 @@ This License shall be included in all functional textual files.
 #define BBIT				SSTD_BBIT /**< @brief Alias for \ref SSTD_BBIT */
 #define BTOGGLE				SSTD_BIT_TOGGLE /**< @brief Alias for \ref SSTD_BIT_TOGGLE */
 
+#define DEC2BCD_8			SSTD_DEC2BCD_8 /**< @brief Alias for \ref SSTD_DEC2BCD_8 */
+#define BCD2DEC_8			SSTD_BCD2DEC_8 /**< @brief Alias for \ref SSTD_BCD2DEC_8 */
+
 
 // ----- MACRO FUNCTIONS
 // MISC FUNCTIONS
@@ -189,6 +192,28 @@ This License shall be included in all functional textual files.
  */
 #define SSTD_BIT_TOGGLE(_value, _bit) \
 	_value ^= 1 << (_bit)
+
+
+// CONVERSIONS
+/**
+ * @brief Convert 8-bit decimal value to BCD.
+ * 
+ * Example: 22 in decimal will become 0x22 in hex.
+ * 
+ * @param _in Input 8-bit value.
+ */
+#define SSTD_DEC2BCD_8(_in) \
+	((((_in)) / 10) << 4) + ((_in) % 10)
+
+/**
+ * @brief Convert 8-bit BCD value to decimal.
+ * 
+ * Example: 0x22 in BCD will become 22 in decimal.
+ * 
+ * @param _in Input 8-bit value.
+ */
+#define SSTD_BCD2DEC_8(_in) \
+	((((_in)) >> 4) * 10) + ((_in) & 0x0F)
 
 
 #ifdef __cplusplus
@@ -705,6 +730,27 @@ namespace sStd
 		// Return sum of all digits
 		return sum;		
 	}
+
+	// CONVERSION FUNCTION DECLARATIONS
+	/**
+	 * @brief Convert 8-bit decimal value to BCD.
+	 * 
+	 * Example: 22 in decimal will become 0x22 in hex.
+	 * 
+	 * @param num Input 8-bit value.
+	 * @return Value \c num in BCD.
+	 */
+	uint8_t dec2BCD(uint8_t num);
+
+	/**
+	 * @brief Convert 8-bit BCD value to decimal.
+	 * 
+	 * Example: 0x22 in BCD will become 22 in decimal.
+	 * 
+	 * @param num Input 8-bit value.
+	 * @return Value \c num in decimal.
+	 */
+	uint8_t BCD2dec(uint8_t num);
 
 	// STRING MANIPULATION FUNCTIONS DECLARATIONS
 	/**
