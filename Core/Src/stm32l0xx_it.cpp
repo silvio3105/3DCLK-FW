@@ -12,11 +12,8 @@
 #include			"main.h"
 #include			"config.h"
 #include			"stm32l0xx_it.h"
-#include			"ProgLED.h"
+#include			"LED.h"
 
-
-// ----- EXTERNS
-extern ProgLED<LEDS, LED_FORMAT> LEDs;
 
 
 /**
@@ -57,13 +54,31 @@ void PendSV_Handler(void)
 
 }
 
+
+extern volatile uint32_t tick;
+
 /**
   * @brief This function handles System tick timer.
   */
 void SysTick_Handler(void)
 {
-
+	//tick++;
 }
+
+extern volatile uint8_t time;
+
+void RTC_IRQHandler(void)
+{
+	// Clear EXTI line pending interrupt flag
+	EXTI->PR |= EXTI_IMR_IM20;
+
+	// Use check below to make sure interrupt was RTC wake up
+	// if (RTC->ISR & RTC_ISR_WUTF)
+
+	// SOON: Just for testing
+	time = 1;
+}
+
 
 /**
   * @brief This function handles EXTI line 0 and line 1 interrupts.

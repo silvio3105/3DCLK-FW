@@ -220,9 +220,13 @@ void ledInit(void)
 			SSTD_BIT_SET(initFlags, INIT_LED_POS);
 
 			// SOON: Test
-			LEDs.rgb(ProgLED_rgb_t::ORANGE, 42);
+			LEDs.rgb(ProgLED_rgb_t::RED, 100);
 			LEDs.led[LED_IDX_DOT].rgb(0xFF0000, 42);
 			LEDs.led[LED_IDX_DOT + 1].rgb(0xFF0000, 42);
+			LEDs.off();
+			LEDs.led[7].on();
+			LEDs.led[3].on();
+			LEDs.led[2].on();
 
 			LED_UPDATE;
 			break;

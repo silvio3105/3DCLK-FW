@@ -163,6 +163,9 @@ This License shall be included in all methodal textual files.
 #define TNH_SENS_ADDR				0x45 /**< @brief I2C address for SHT40-B sensor. */
 #endif // TNH_SENSOR
 
+// CLOCK
+#define CLOCK_DEF_FORMAT		sRTC_time_format_t::FORMAT_24H /**< @brief Default time format. */
+
 
 // ----- CHECKS
 #if (HW_REV != HW_3DCLK_MAIN_rev1)

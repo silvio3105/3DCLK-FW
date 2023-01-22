@@ -202,26 +202,6 @@ void MX_I2C1_Init(void)
 }
 
 /**
-  * @brief RTC Initialization Function
-  * @param None
-  * @retval None
-  */
-void MX_RTC_Init(void)
-{
-	LL_RTC_InitTypeDef RTC_InitStruct = {0};
-
-	/* Peripheral clock enable */
-	LL_RCC_EnableRTC();
-
-	/** Initialize RTC and set the Time and Date
-	 */
-	RTC_InitStruct.HourFormat = LL_RTC_HOURFORMAT_24HOUR;
-	RTC_InitStruct.AsynchPrescaler = 127;
-	RTC_InitStruct.SynchPrescaler = 255;
-	LL_RTC_Init(RTC, &RTC_InitStruct);
-}
-
-/**
   * @brief TIM2 Initialization Function
   * @param None
   * @retval None

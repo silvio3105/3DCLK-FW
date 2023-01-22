@@ -67,6 +67,12 @@ ifeq ($(CHIP), STM32L051K8)
 LDSCRIPT = STM32L051K8Tx_FLASH.ld
 endif
 
+# CHIP DEFINE
+ifeq ($(CHIP), STM32L051K8)
+C_DEFS += -DSTM32L051xx
+endif
+
+
 ######################################
 # TRANSLATION UNITS
 ######################################
@@ -95,7 +101,9 @@ Core/Src/SHT40.cpp \
 Core/Src/LED.cpp \
 Core/Src/TnH.cpp \
 Core/Src/Log.cpp \
-Core/Src/sWatchdog.cpp
+Core/Src/sWatchdog.cpp \
+Core/Src/sRTC.cpp \
+Core/Src/Clock.cpp
 
 
 # ASSEMBLER UNITS
@@ -139,7 +147,6 @@ C_DEFS +=  \
 -DPREFETCH_ENABLE=0 \
 -DINSTRUCTION_CACHE_ENABLE=1 \
 -DDATA_CACHE_ENABLE=1 \
--DSTM32L051xx
 
 
 #######################################

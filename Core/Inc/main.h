@@ -88,6 +88,25 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define LDR_Pin LL_GPIO_PIN_0
+#define LDR_GPIO_Port GPIOA
+#define TX_Pin LL_GPIO_PIN_2
+#define TX_GPIO_Port GPIOA
+#define RX_Pin LL_GPIO_PIN_3
+#define RX_GPIO_Port GPIOA
+#define DO_3V3_Pin LL_GPIO_PIN_5
+#define DO_3V3_GPIO_Port GPIOA
+#define BLE_SYS_Pin LL_GPIO_PIN_0
+#define BLE_SYS_GPIO_Port GPIOB
+#define BLE_LED_Pin LL_GPIO_PIN_1
+#define BLE_LED_GPIO_Port GPIOB
+#define BLE_LED_EXTI_IRQn EXTI0_1_IRQn
+#define BLE_TX_Pin LL_GPIO_PIN_9
+#define BLE_TX_GPIO_Port GPIOA
+#define BLE_RX_Pin LL_GPIO_PIN_10
+#define BLE_RX_GPIO_Port GPIOA
+#define BLE_RST_Pin LL_GPIO_PIN_3
+#define BLE_RST_GPIO_Port GPIOB
 #ifndef NVIC_PRIORITYGROUP_0
 #define NVIC_PRIORITYGROUP_0         ((uint32_t)0x00000007) /*!< 0 bit  for pre-emption priority,
                                                                  4 bits for subpriority */

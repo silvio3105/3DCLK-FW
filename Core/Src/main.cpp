@@ -32,10 +32,12 @@ This License shall be included in all methodal textual files.
 #include			"SHT40.h"
 #include			"ProgLED.h"
 #include			"sWatchdog.h"
+#include			"sRTC.h"
 
 #include			"LED.h"
 #include			"TnH.h"
 #include			"Log.h"
+#include			"Clock.h"
 
 
 // ----- VARIABLES
@@ -74,7 +76,8 @@ iDog Dog(DOG_HANDLE, DOG_RELOAD, DOG_PRESCALER, DOG_MODE);
 static void getResetReason(void);
 
 
-
+volatile uint8_t time = 0;
+volatile uint32_t tick = 0;
 
 // ----- APPLICATION ENTRY POINT
 int main(void)
@@ -93,7 +96,24 @@ int main(void)
 	// Watchdog init (if not debug build)
 	#ifndef DEBUG
 	Dog.start();
-	#endif // DEBUG  	
+	#endif // DEBUG
+
+	// Debug UART init
+	MX_USART2_UART_Init();	
+
+	// Set logger status if not DEBUG build
+	#ifdef DEBUG
+	Serial.status(sStd::logStatus_t::LOG_ON);
+	#endif // DEBUG
+
+	// Firmware and hardware info
+	logf("FW: %s\n", buildInfo.FW);
+	logf("HW: %s\n", buildInfo.HW);
+	logf("Build: %s\n", buildInfo.DATE);
+
+	// Reset reason
+	getResetReason();
+	logf("Reset reason: %d\n", resetFlags);	
 
 	// GPIO init
 	MX_GPIO_Init();
@@ -107,43 +127,25 @@ int main(void)
 	// IC21 init
 	MX_I2C1_Init();
 
-	// RTC init
-	MX_RTC_Init();
-
 	// Timer2 init
 	MX_TIM2_Init();
 
-	// UARTs init
+	// BLE UART init
 	MX_USART1_UART_Init();
-	MX_USART2_UART_Init();
 
 	// Give 1s to make sure other ICs are on
 	#ifndef DEBUG
 	delay(1000);
 	#endif // DEBUG
 
-	// Set logger status if not DEBUG build
-	#ifdef DEBUG
-	Serial.status(sStd::logStatus_t::LOG_ON);
-	#endif // DEBUG
-
-
-	// Firmware and hardware info
-	logf("FW: %s\n", buildInfo.FW);
-	logf("HW: %s\n", buildInfo.HW);
-	logf("Build: %s\n", buildInfo.DATE);
-
-	// Reset reason
-	getResetReason();
-	logf("Reset reason: %d\n", resetFlags);
-
-
-	// MODULES INIT
 	// LED line init
 	ledInit();
 
 	// Temperature & humidity sensor init
 	tnhInit();
+
+	// Clock init
+	clockInit();
 
 
 
@@ -159,23 +161,60 @@ int main(void)
 	Dog.feed();
 	#endif // DEBUG	
 
+	static const char days[7][4] = {
+		"Mon",
+		"Tue",
+		"Wed",
+		"Thu",
+		"Fri",
+		"Sat",
+		"Sun"
+	};
+
+	static const char pm[2][3] = {
+		"AM",
+		"PM"
+	};
+
+	sRTC_time_t c;
+	uint8_t ac = 0;
+
+
+	sClock.enableWakeup(sRTC_WUT_clock_t::CK_SPRE, 10);
+
 	while (1)
 	{
-		TnH.clear();
+		/*TnH.clear();
 		TnH.measure(SHT40_meas_t::TRH_H);
 
 		x = TnH.rh(rh);
 		logf("RH[%d]: %d%%\n", x, rh);
 
 		x = TnH.temperature(temp);
-		logf("T[%d]: %d°C\n\n", x, temp);
+		logf("T[%d]: %d°C\n\n", x, temp);*/
 
-		ledPrint((const char*)&charBitmap[chIdx++].ch);
-		if (chIdx == 34) chIdx = 0;
-		toggleSemicolon();
-		LED_UPDATE;
+		
 
-		delay(250);
+		if (time)
+		{
+			time = 0;
+			ac++;
+
+			sClock.get(c);
+			logf("Date: %s %02d.%02d.%04d.\n", days[c.weekDay - 1], c.day, c.month, c.year + 2000);
+			logf("Time: %02d:%02d:%02d %s\n", c.hour, c.minute, c.second, pm[c.ampm]);	
+
+			sClock.enableWakeup(sRTC_WUT_clock_t::CK_SPRE, 10);
+		}	
+
+
+		if (ac == 3)
+		{
+			sClock.disableWakeup();
+			log("Disabled\n");
+
+			ac++;
+		}
 
 		// Feed the dog!
 		#ifndef DEBUG
