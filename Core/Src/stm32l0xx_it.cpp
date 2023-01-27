@@ -124,4 +124,9 @@ void DMA1_Channel4_5_6_7_IRQHandler(void)
 	LEDs.stop();
 }
 
+void ADC1_COMP_IRQHandler(void)
+{
+	
+}
+
 // END WITH NEW LINE
