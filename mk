@@ -103,7 +103,10 @@ Core/Src/TnH.cpp \
 Core/Src/Log.cpp \
 Core/Src/sWatchdog.cpp \
 Core/Src/sRTC.cpp \
-Core/Src/Clock.cpp
+Core/Src/Clock.cpp \
+Core/Src/sADC.cpp \
+Core/Src/sEEPROM.cpp \
+Core/Src/Storage.cpp
 
 
 # ASSEMBLER UNITS
