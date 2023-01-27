@@ -28,7 +28,7 @@ This License shall be included in all methodal textual files.
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
-/** \addtogroup Config
+/** \addtogroup FW_Config
  * 
  * Firmware configuration file.
  * @{
@@ -43,6 +43,9 @@ This License shall be included in all methodal textual files.
 
 // HARDWARE LED REVISIONS
 #define HW_3DCLK_LED_rev1			1 /**< @brief Hardware ID for LED rev1. */
+
+// MCUS
+#define STM32L051K8					1 /**< @brief ID for STM32L051K8 MCU. */
 
 // LED CHIPS
 #define IN_PI55TAT					1 /**< @brief IN-PI55TAT LED chip. */
@@ -65,6 +68,7 @@ This License shall be included in all methodal textual files.
 #if (HW_REV == HW_3DCLK_MAIN_rev1)
 #define HW_VER						"22-0091rev1" /**< @brief Hardware version. 16 chars max! */
 
+#define MCU							STM32L051K8 /**< @brief MCU used by selected hardware version. */
 #define LED_CHIP					IN_PI55TAT /**< @brief LED chip used by selected hardare version. */
 #define TNH_SENSOR					SHT40_AD /**< @brief Temperature & humidity sensor used by selected hardware version. */
 #endif // HW_REV
@@ -89,6 +93,12 @@ This License shall be included in all methodal textual files.
 
 
 // ----- CONFIGURATION
+// EEPROM
+#if (MCU == STM32L051K8)
+#define EEPROM_START					SEEPROM_START /**< @brief EEPROM start address in flash. */
+#define EEPROM_LEN						SEEPROM_SIZE /**< @brief EEPROM sector size in bytes. */
+#endif // MCU
+
 // PINS
 #if (HW_REV == HW_3DCLK_MAIN_rev1)
 #define LDR_Pin						LL_GPIO_PIN_0 /**< @brief GPIO pin for light depended resistor. */
@@ -164,7 +174,7 @@ This License shall be included in all methodal textual files.
 #endif // TNH_SENSOR
 
 // CLOCK
-#define CLOCK_DEF_FORMAT		sRTC_time_format_t::FORMAT_24H /**< @brief Default time format. */
+#define CLOCK_DEF_FORMAT			sRTC_time_format_t::FORMAT_24H /**< @brief Default time format. */
 
 
 // ----- CHECKS
