@@ -33,11 +33,13 @@ This License shall be included in all methodal textual files.
 #include			"ProgLED.h"
 #include			"sWatchdog.h"
 #include			"sRTC.h"
+#include			"sEEPROM.h"
 
 #include			"LED.h"
 #include			"TnH.h"
 #include			"Log.h"
 #include			"Clock.h"
+#include			"Storage.h"
 
 
 // ----- VARIABLES
@@ -82,7 +84,6 @@ volatile uint32_t tick = 0;
 // ----- APPLICATION ENTRY POINT
 int main(void)
 {
-	// STM32 INIT
 	// Enable clocks
 	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
 	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
@@ -148,13 +149,28 @@ int main(void)
 	clockInit();
 
 
+	// EEPROM TEST
 
+	uint32_t val[] = { 1, 10, 100, 0, 127 };
 
+	//EEPROMConfig.write(0, val, sizeof(val));
+
+	memset(val, 0xFF, sizeof(val));
+
+	EEPROMConfig.read(0, val, sizeof(val));
+
+	log("\n");
+	for (uint8_t i = 0; i < 5; i++) logf("- Value %d: %d\n", i + 1, val[i]);
+	//EEPROMConfig.erase(0, 1);
+	memset(val, 0xFF, sizeof(val));
+
+	EEPROMConfig.read(0, val, sizeof(val));
+	for (uint8_t i = 0; i < 5; i++) logf("- Value %d: %d\n", i + 1, val[i]);
+	log("\n");
 
 	uint8_t x = 100;
 	uint8_t rh = 0;
 	int16_t temp = 0;
-	uint8_t chIdx = 0;
 
 	// Feed the dog!
 	#ifndef DEBUG
@@ -177,44 +193,31 @@ int main(void)
 	};
 
 	sRTC_time_t c;
-	uint8_t ac = 0;
-
-
 	sClock.enableWakeup(sRTC_WUT_clock_t::CK_SPRE, 10);
 
 	while (1)
 	{
-		/*TnH.clear();
-		TnH.measure(SHT40_meas_t::TRH_H);
-
-		x = TnH.rh(rh);
-		logf("RH[%d]: %d%%\n", x, rh);
-
-		x = TnH.temperature(temp);
-		logf("T[%d]: %d°C\n\n", x, temp);*/
-
-		
-
 		if (time)
 		{
 			time = 0;
-			ac++;
 
 			sClock.get(c);
 			logf("Date: %s %02d.%02d.%04d.\n", days[c.weekDay - 1], c.day, c.month, c.year + 2000);
 			logf("Time: %02d:%02d:%02d %s\n", c.hour, c.minute, c.second, pm[c.ampm]);	
 
+
+			TnH.clear();
+			TnH.measure(SHT40_meas_t::TRH_H);
+
+			x = TnH.rh(rh);
+			logf("RH[%d]: %d%%\n", x, rh);
+
+			x = TnH.temperature(temp);
+			logf("T[%d]: %d°C\n\n", x, temp);
+
+
 			sClock.enableWakeup(sRTC_WUT_clock_t::CK_SPRE, 10);
 		}	
-
-
-		if (ac == 3)
-		{
-			sClock.disableWakeup();
-			log("Disabled\n");
-
-			ac++;
-		}
 
 		// Feed the dog!
 		#ifndef DEBUG
