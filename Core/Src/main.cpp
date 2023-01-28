@@ -150,23 +150,22 @@ int main(void)
 
 
 	// EEPROM TEST
-
 	uint32_t val[] = { 1, 10, 100, 0, 127 };
-
 	//EEPROMConfig.write(0, val, sizeof(val));
-
 	memset(val, 0xFF, sizeof(val));
-
 	EEPROMConfig.read(0, val, sizeof(val));
-
 	log("\n");
 	for (uint8_t i = 0; i < 5; i++) logf("- Value %d: %d\n", i + 1, val[i]);
 	//EEPROMConfig.erase(0, 1);
 	memset(val, 0xFF, sizeof(val));
-
 	EEPROMConfig.read(0, val, sizeof(val));
 	for (uint8_t i = 0; i < 5; i++) logf("- Value %d: %d\n", i + 1, val[i]);
 	log("\n");
+
+
+	// ADC
+	LL_ADC_Enable(ADC1);
+
 
 	uint8_t x = 100;
 	uint8_t rh = 0;
@@ -199,7 +198,7 @@ int main(void)
 	{
 		if (time)
 		{
-			time = 0;
+			/*time = 0;
 
 			sClock.get(c);
 			logf("Date: %s %02d.%02d.%04d.\n", days[c.weekDay - 1], c.day, c.month, c.year + 2000);
@@ -214,10 +213,22 @@ int main(void)
 
 			x = TnH.temperature(temp);
 			logf("T[%d]: %d°C\n\n", x, temp);
+*/
 
-
-			sClock.enableWakeup(sRTC_WUT_clock_t::CK_SPRE, 10);
+			//sClock.enableWakeup(sRTC_WUT_clock_t::CK_SPRE, 10);
 		}	
+
+		LL_ADC_REG_StartConversion(ADC1);
+		while (LL_ADC_REG_IsConversionOngoing(ADC1));
+		uint16_t ldr = LL_ADC_REG_ReadConversionData12(ADC1);
+		logf("LDR: %d\n", ldr);
+
+		ldr = sStd::scale<uint16_t>(ldr, 60, 600, 1, 100);
+
+		LEDs.brightness(ldr);
+		LEDs.update(LED_LINE);
+
+		delay(100);		
 
 		// Feed the dog!
 		#ifndef DEBUG
