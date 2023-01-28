@@ -219,13 +219,15 @@ void ledInit(void)
 			SSTD_BIT_SET(initFlags, INIT_LED_POS);
 
 			// SOON: Test
-			LEDs.rgb(ProgLED_rgb_t::RED, 100);
-			LEDs.led[LED_IDX_DOT].rgb(0xFF0000, 42);
-			LEDs.led[LED_IDX_DOT + 1].rgb(0xFF0000, 42);
-			LEDs.off();
-			LEDs.led[7].on();
-			LEDs.led[3].on();
-			LEDs.led[2].on();
+			LEDs.rgb(ProgLED_rgb_t::RED, 69);
+			//LEDs.led[LED_IDX_DOT].rgb(0xFF0000, 42);
+			//LEDs.led[LED_IDX_DOT + 1].rgb(0xFF0000, 42);
+			//LEDs.off();
+			LEDs.led[0].off();
+			LEDs.led[1].off();
+			//LEDs.led[2].on();
+
+			ledPrint("8");
 
 			LED_UPDATE;
 			break;
@@ -250,13 +252,16 @@ void ledPrint(const char* c)
 	char bitmap = 0;
 
 	// Loop through input four characters
-	for (uint8_t i = 1; i < 2; i++) // i < 5
+	for (uint8_t i = 1; i < 2; i++) // SOON: i < 5
 	{
+		// If NULL char is found, break
+		if (!c[i - 1]) break;
+
 		// Get bitmap for character
 		bitmap = getCharBitmap(c[i - 1]);
 
 		// Turn on or off LEDs using character bitmap
-		for (uint8_t bIdx = 0; bIdx < 8; bIdx++)
+		for (uint8_t bIdx = 0; bIdx < 7; bIdx++)
 		{
 			if (SSTD_BIT(bitmap, bIdx)) LEDs.led[ledCharIdx[i] + bIdx].on();
 				else LEDs.led[ledCharIdx[i] + bIdx].off();
