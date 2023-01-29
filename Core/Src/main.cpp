@@ -218,17 +218,29 @@ int main(void)
 			//sClock.enableWakeup(sRTC_WUT_clock_t::CK_SPRE, 10);
 		}	
 
-		LL_ADC_REG_StartConversion(ADC1);
+		/*LL_ADC_REG_StartConversion(ADC1);
 		while (LL_ADC_REG_IsConversionOngoing(ADC1));
 		uint16_t ldr = LL_ADC_REG_ReadConversionData12(ADC1);
 		logf("LDR: %d\n", ldr);
 
-		ldr = sStd::scale<uint16_t>(ldr, 60, 600, 1, 100);
+		//ldr = sStd::scale<uint16_t>(ldr, 60, 600, 1, 100);
 
-		LEDs.brightness(ldr);
+		if (ldr > 90) ldr = 90;
+		if (ldr < 60) ldr = 60;
+
+		uint8_t led_ldr = SSTD_SCALE(ldr, 60, 90, 1, 100);
+
+		//logf("LED: %d%%\n", led_ldr);
+
+		LEDs.brightness(led_ldr);
 		LEDs.update(LED_LINE);
 
-		delay(100);		
+		delay(2500);*/
+
+		if ((USART1->ISR & USART_ISR_RXNE))
+		{
+			logf("%c", USART1->RDR);
+		}
 
 		// Feed the dog!
 		#ifndef DEBUG

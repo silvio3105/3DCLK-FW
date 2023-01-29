@@ -146,7 +146,7 @@ This License shall be included in all methodal textual files.
 // UART
 #if (HW_REV == HW_3DCLK_MAIN_rev1)
 #define UART_BAUD					115200 /**< @brief Baud rate for UART for debugging. */
-#define BLE_BAUD					115200 /**< @brief Baud rate for BLE module communication. */
+#define BLE_BAUD					9600 /**< @brief Baud rate for BLE module communication. */
 #endif // HW_REV
 
 // LEDs
