@@ -86,6 +86,20 @@ void sBLE_HM::reset(sBLE_action_t type)
 		else rst(); // Reset via GPIO pin
 }
 
+void sBLE_HM::printf(const char* str, ...)
+{
+	char buffer[128];
+
+	// Format text string
+	va_list args;
+	va_start(args, str);	
+	uint8_t len = vsnprintf(buffer, sizeof(buffer), str, args);
+	va_end(args);
+
+	// Send it
+	TX(buffer, len);
+}
+
 
 // ----- PRIVATE METHOD DEFINITIONS
 uint8_t sBLE_HM::cmp(const char* input, const char* wanted, const uint8_t len)

@@ -305,6 +305,22 @@ class sBLE_HM
 	 */
 	void reset(sBLE_action_t type);
 
+	void printf(const char* str, ...);
+
+
+	/**
+	 * @brief Send text over BLE.
+	 * 
+	 * @param str Pointer to C-string to send.
+	 * @param len Length of \c str
+	 * @return No return value.
+	 */
+	inline void print(const char* str, uint8_t len)
+	{
+		// Pass string to TX handler
+		TX(str, len);
+	}
+
 	/**
 	 * @brief Ping HM-10/HM-16 module.
 	 * 
