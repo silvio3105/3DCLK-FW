@@ -49,7 +49,7 @@ void storageInit(void)
 	// Read config mark bytes
 	Config.read(CFG_ADDR_MARK, &configMark, sizeof(configMark));
 
-	if (configMark == DEVICE_CFGED_MARK)
+	if (configMark == CFG_MARK)
 	{
 		// SOON: Add loading configuration
 		logf("Reading device configuration\n");
@@ -58,7 +58,7 @@ void storageInit(void)
 	{
 		logf("Device not configured!\n");
 
-		configMark = DEVICE_CFGED_MARK;
+		configMark = CFG_MARK;
 		Config.write(CFG_ADDR_MARK, &configMark, sizeof(configMark));
 
 		// SOON: Write default config to EEPROM
