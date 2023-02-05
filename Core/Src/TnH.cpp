@@ -37,7 +37,7 @@ static void I2C1write(uint8_t addr, uint8_t* data, uint8_t len, uint16_t d);
 
 
 // ----- OBJECTS
-#if (TNH_SENSOR == SHT40_AD) || (TNH_SENSOR == SHT40_B)
+#if (defined SHT40_AD || defined SHT40_B)
 /**
  * @brief SHT40 sensor object.
  * 
@@ -46,11 +46,7 @@ static void I2C1write(uint8_t addr, uint8_t* data, uint8_t len, uint16_t d);
  * \c I2C1write Function for handling I2C1 writes.
  */
 SHT40 TnH = SHT40(TNH_SENS_ADDR, I2C1read, I2C1write);
-#endif // TNH_SENSOR
-
-
-// ----- EXTERNS
-extern uint8_t initFlags;
+#endif
 
 
 // ----- FUNCTION DEFINITIONS

@@ -25,14 +25,14 @@ This License shall be included in all methodal textual files.
 */
 
 
-#ifndef _TNH_H
-#define _TNH_H
+#ifndef _TNH_H_
+#define _TNH_H_
 
 // ----- INCLUDE FILES
 #include			"main.h"
-#if (TNH_SENSOR == SHT40_AD) || (TNH_SENSOR == SHT40_B)
+#if (defined SHT40_AD || defined SHT40_B)
 #include			"SHT40.h"
-#endif // TNH_SENSOR
+#endif
 
 
 // ----- FUNCTION DECLARATIONS
@@ -45,11 +45,11 @@ void tnhInit(void);
 
 
 // ----- EXTERNS
-#if (TNH_SENSOR == SHT40_AD) || (TNH_SENSOR == SHT40_B)
+#if (defined SHT40_AD || defined SHT40_B)
 extern SHT40 TnH;
-#endif // TNH_SENSOR
+#endif
 
 
-#endif // _TNH_H
+#endif // _TNH_H_
 
 // END WITH NEW LINE
