@@ -63,6 +63,39 @@ This License shall be included in all methodal textual files.
 #define HW_3DCLK_LED_rev1 /**< @brief Macro for LED hardware selection. */
 
 
+// ----- MISC CONFIGURATION
+// DEFAULT DEVICE CONFIGURATION
+#define CFG_MARK					0xDEADBEEF /**< @brief Value in EEPROM that marks configured device. */
+#define CFG_TIME_FORMAT				sRTC_time_format_t::FORMAT_24H /**< @brief Default time format. */
+
+// SYSTEM STUFF
+#define SYS_WAKEUP					10 /**< @brief System wakeup time in seconds. */
+#define SYS_WAKEUP_CLOCK			sRTC_WUT_clock_t::CK_SPRE /**< @brief RTC wakeup clock for system wakeup. */
+#define SYS_WAKES_IN_MIN			(60 / SYS_WAKEUP) /**< @brief Number of wakeups in 60 seconds. Rounded to lower number(eg., 2.8 = 2). */
+
+// LEDS
+#define LEDS						9 /**< @brief Number of LEDs. */
+#define LED_LINE					ProgLED_line_t::NON_BLOCKING /**< @brief LED line type. */
+
+// LED DEFAULT COLORS AND BRIGHTNESS
+#define LED_COLOR_BLE_CONN			ProgLED_rgb_t::NEON_GREEN /**< @brief LED color if BLE has connection. */
+#define LED_BRGHT_BLE_CONN			100 /**< @brief LED brightness if BLE has connection. */
+
+#define LED_COLOR_BLE_DISC			ProgLED_rgb_t::PURPLE /**< @brief LED flash color for BLE disconnect. */
+#define LED_BRGHT_BLE_DISC			100 /**< @brief LED flash brightness for BLE disconnect. */
+
+#define LED_COLOR_ERROR				ProgLED_rgb_t::RED /**< @brief LED color for errors. */
+#define LED_BRGHT_ERROR				8 /**< @brief LED brightness for errors. */
+
+// TNH STUFF
+#define TNH_MEASURE_TYPE			SHT40_meas_t::TRH_H /**< @brief Default measure type for temperature and relative humidity. */
+
+// DEBUG STUFF
+#ifdef DEBUG
+#define LOG_BUFF					128 /**< @brief Buffer size in bytes for logger. */
+#endif // DEBUG
+
+
 // ----- HARDWARE CONFIGURATION
 // HW_3DCLK_MAIN_rev1 hardware configuration
 #ifdef HW_3DCLK_MAIN_rev1
