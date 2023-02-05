@@ -34,7 +34,9 @@ This License shall be included in all methodal textual files.
  * @{
  */
 
-#define _3DCLK_HW_MAIN
+
+#define _3DCLK_HW_MAIN /**< @brief Main hardware configuration included. */
+
 
 // ----- HARDWARE MISC INFO
 #define HW_VER						"22-0091rev1" /**< @brief Hardware version. 16 chars max! */
@@ -42,7 +44,9 @@ This License shall be included in all methodal textual files.
 
 // ----- HARDWARE SELECTION
 // MCUS
+#ifndef STM32L051K8
 #define STM32L051K8 /**< @brief STM32L051K8 MCU. */
+#endif // STM32L051K8
 
 // LED CHIPS
 #define IN_PI55TAT /**< @brief IN_PI55TAT RGB LED chip. */
@@ -50,21 +54,6 @@ This License shall be included in all methodal textual files.
 // TEMPERATURE & HUMIDITY SENSORS
 #define SHT40_AD /**< @brief SHT40_AD sensor. */
 //#define SHT40_B /**< @brief SHT40_B sensor. */
-
-
-// ----- MISC CONFIGURATION
-#define DEVICE_CFGED_MARK			0xDEADBEEF /**< @brief Value in EEPROM that marks configured device. */
-#define CLOCK_DEF_FORMAT			sRTC_time_format_t::FORMAT_24H /**< @brief Default time format. */
-#define SYS_WAKEUP					10 /**< @brief System wakeup time in seconds. */
-#define SYS_WAKEUP_CLOCK			sRTC_WUT_clock_t::CK_SPRE /**< @brief RTC wakeup clock for system wakeup. */
-#define LEDS						9 /**< @brief Number of LEDs. */
-#define LED_LINE					ProgLED_line_t::NON_BLOCKING /**< @brief LED line type. */
-#define TNH_TEMP_UNIT				SHT40_unit_t::SHT40_UNIT_C /**< @brief Default temperature unit. */
-
-// CONFIG IN DEBUG BUILD
-#ifdef DEBUG
-#define LOG_BUFF					128 /**< @brief Buffer size in bytes for logger. */
-#endif // DEBUG
 
 
 // ----- HARDWARE DEPENDED CONFIGURATION
@@ -122,8 +111,10 @@ This License shall be included in all methodal textual files.
 // TEMPERATURE & HUMIDITY SENSOR
 #ifdef SHT40_AD
 #define TNH_SENS_ADDR				0x44 /**< @brief I2C address for SHT40-AD temperature sensor. */
+#define TNH_TEMP_UNIT				SHT40_unit_t::SHT40_UNIT_C /**< @brief Default temperature unit. */
 #elif defined SHT40_AD
 #define TNH_SENS_ADDR				0x45 /**< @brief I2C address for SHT40-B sensor. */
+#define TNH_TEMP_UNIT				SHT40_unit_t::SHT40_UNIT_C /**< @brief Default temperature unit. */
 #endif
 
 /** @} */
