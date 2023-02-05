@@ -28,7 +28,7 @@ This License shall be included in all methodal textual files.
 // ----- INCLUDE FILES
 #include			"LED.h"
 #include			"main.h"
-#include			"config.h"
+#include			"FWConfig.h"
 #include			"sStd.h"
 #include			"ProgLED.h"
 
@@ -134,10 +134,6 @@ uint8_t ledCharIdx[5] = {
 ProgLED<LEDS, LED_FORMAT> LEDs = ProgLED<LEDS, LED_FORMAT>(ledPWMStart, ledPWMStop);
 
 
-// ----- EXTERNS
-extern uint8_t initFlags;
-
-
 // ----- FUNCTION DEFINITIONS
 static void ledPWMStart(int8_t bit)
 {
@@ -213,7 +209,8 @@ void ledInit(void)
 	{
 		case PROG_LED_OK:
 		{
-			logf("Total LEDs %d. LED init OK\n", LEDS);
+			log("LED init OK\n");
+			logf("Total LEDs %d\n", LEDS);
 
 			// Set init flag for LED line
 			SSTD_BIT_SET(initFlags, INIT_LED_POS);

@@ -29,7 +29,7 @@ This License shall be included in all methodal textual files.
 #define _LED_H_
 
 // ----- INCLUDE FILES
-#include			"config.h"
+#include			"FWConfig.h"
 #include			"ProgLED.h"
 
 #include			<stdint.h>
