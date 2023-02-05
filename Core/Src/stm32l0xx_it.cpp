@@ -10,10 +10,9 @@
 
 // ----- INCLUDE FILES
 #include			"main.h"
-#include			"config.h"
+#include			"FWConfig.h"
 #include			"stm32l0xx_it.h"
 #include			"LED.h"
-
 
 
 /**
@@ -54,15 +53,12 @@ void PendSV_Handler(void)
 
 }
 
-
-extern volatile uint32_t tick;
-
 /**
   * @brief This function handles System tick timer.
   */
 void SysTick_Handler(void)
 {
-	//tick++;
+	tick++;
 }
 
 extern volatile uint8_t time;
