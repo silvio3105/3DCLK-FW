@@ -9,10 +9,11 @@
  */
 
 // ----- INCLUDE FILES
+#include			"stm32l0xx_it.h"
 #include			"main.h"
 #include			"FWConfig.h"
-#include			"stm32l0xx_it.h"
 #include			"LED.h"
+#include			"BLE.h"
 
 
 /**
@@ -61,18 +62,18 @@ void SysTick_Handler(void)
 	tick++;
 }
 
-extern volatile uint8_t time;
+
 
 void RTC_IRQHandler(void)
 {
-	// Clear EXTI line pending interrupt flag
-	EXTI->PR |= EXTI_IMR_IM20;
-
 	// Use check below to make sure interrupt was RTC wake up
 	// if (RTC->ISR & RTC_ISR_WUTF)
 
-	// SOON: Just for testing
-	time = 1;
+	// Clear EXTI line pending interrupt flag
+	EXTI->PR |= EXTI_IMR_IM20;
+
+	// Set RTC wakeup flag
+	wakeup = 1;
 }
 
 
@@ -83,6 +84,7 @@ void EXTI0_1_IRQHandler(void)
 {
 	if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_1) != RESET)
 	{
+		bleConnAltered = 1;
 		LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_1);
 	}
 }
