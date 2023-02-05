@@ -35,13 +35,31 @@ This License shall be included in all methodal textual files.
 #include			<stdint.h>
 
 
-// ----- DEFINES
+// ----- ENUMS
 /**
- * @brief Snippet for calling LED line update.
+ * @brief LED panel indexes for \ref ledCharIdx array.
  * 
  */
-#define LED_UPDATE \
-	LEDs.update(LED_LINE)
+enum led_panel_t : uint8_t {
+	LED_PANEL1 = 1, /**< @brief Index for frist LED panel. */
+	LED_PANEL2 = 2, /**< @brief Index for second LED panel. */
+	LED_PANEL3 = 3, /**< @brief Index for third LED panel. */
+	LED_PANEL4 = 4 /**< @brief Index for fourth LED panel. */
+};
+
+/**
+ * @brief Current info displayed with LEDs.
+ * 
+ */
+enum display_info_t : uint8_t {
+	DISPLAY_TIME = 0,
+	DISPLAY_DAY,
+	DISPLAY_DATE,
+	DISPLAY_TEMP,
+	DISPLAY_RH,
+	DISPLAY_ERROR,
+	DISPLAY_CUSTOM
+};
 
 
 // ----- STRUCTS
@@ -57,6 +75,12 @@ struct ledChar
 } __attribute__((packed, aligned(2)));
 
 
+// ----- EXTERNS
+extern ProgLED<LEDS, LED_FORMAT> LEDs;
+extern const ledChar charBitmap[]; // SOON: Test
+extern uint8_t ledUpdateFlag;
+
+
 // ----- FUNCTION DECLARATIONS
 /**
  * @brief LED line init.
@@ -68,26 +92,42 @@ void ledInit(void);
 /**
  * @brief Print four characters to 7-segment display.
  * 
- * @param c Pointer to string of four characters.
+ * @param str Pointer to string of maximum four characters.
  * @return No return value.
  * 
  * @warning Input string must be four characters long.
  * @warning No NULL character is needed.
  * @warning All characters must be written in upper-case.
  */
-void ledPrint(const char* c);
+void ledPrint(const char* str);
 
 /**
  * @brief Toggle semicolon LEDs.
  * 
  * @return No return value.
  */
-void toggleSemicolon(void);
+void ledSmToggle(void);
 
+/**
+ * @brief Turn off semicolon LEDs.
+ * 
+ * @return No return value. 
+ */
+void ledSmOff(void);
 
-// ----- EXTERNS
-extern ProgLED<LEDS, LED_FORMAT> LEDs;
-extern const ledChar charBitmap[]; // SOON: Test
+/**
+ * @brief Turn on semicolon LEDs.
+ * 
+ * @return No return value.
+ */
+void ledSmOn(void);
+
+/**
+ * @brief Update LED line.
+ * 
+ * @return No return value.
+ */
+void ledUpdate(void);
 
 
 #endif // _LED_H_

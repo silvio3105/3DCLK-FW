@@ -60,10 +60,21 @@ static void ledPWMStop(int8_t bit);
  */
 static uint8_t getCharBitmap(const char c);
 
+/**
+ * @brief Display custom \c bitmap on \c panel 
+ * 
+ * @param panel LED panel where custom bitmap should be displayed. See \ref led_panel_t
+ * @param bitmap Custom bitmap.
+ * @return No return value.
+ */
+static void displayBitmap(const led_panel_t panel, const uint8_t bitmap);
+
 
 // ----- VARIABLES
 /**
  * @brief Character bitmap array.
+ * 
+ * LED segment and panel connections are described in "LED Segment & Panel.dwg" in project documentation.
  * 
  * @warning All letter are upper-case.
  */
@@ -104,7 +115,9 @@ const ledChar charBitmap[] = {
 	{ 'V', (LED_S2 | LED_S3 | LED_S5 | LED_S6) },
 
 	// SYMBOLS
+	{ ' ', 0 },
 	{ '-', (LED_S6) },
+	{ '_', (LED_S1) },
 	{ '\\', (LED_S3 | LED_S6 | LED_S7) },
 	{ '/', (LED_S2 | LED_S5 | LED_S6) }
 };
@@ -114,13 +127,17 @@ const ledChar charBitmap[] = {
  * 
  * @warning Array order must be: Dot, LED1, LED2, LED3 & LED4!
  */
-uint8_t ledCharIdx[5] = {
+const uint8_t ledCharIdx[5] = {
 	LED_IDX_DOT,
 	LED_IDX_1,
 	LED_IDX_2,
 	LED_IDX_3,
 	LED_IDX_4
 };
+
+uint8_t ledUpdateFlag = 0; /**< @brief LED update flag. If set, LEDs will be updated. */
+display_info_t ledCurrentDisplay = display_info_t::DISPLAY_TIME; /**< @brief Current info displayed with LEDs. */
+
 
 // ----- OBJECTS
 /**
@@ -186,19 +203,6 @@ static void ledPWMStop(int8_t bit)
 	log("LED DMA PWM Stopped\n");
 }
 
-static uint8_t getCharBitmap(const char c)
-{
-	// Loop through character bitmap array
-	for (uint8_t i = 0; i < SSTD_ARRAY(charBitmap); i++)
-	{
-		// If wanted character is found in bitmap array return its bitmap
-		if (charBitmap[i].ch == c) return charBitmap[i].bitmap;
-	}
-
-	// If bitmap is not found, return _
-	return LED_S1;
-}
-
 void ledInit(void)
 {
 	// Clear LED init flag
@@ -214,19 +218,6 @@ void ledInit(void)
 
 			// Set init flag for LED line
 			SSTD_BIT_SET(initFlags, INIT_LED_POS);
-
-			// SOON: Test
-			LEDs.rgb(ProgLED_rgb_t::WHITE);
-			//LEDs.led[LED_IDX_DOT].rgb(0xFF0000, 42);
-			//LEDs.led[LED_IDX_DOT + 1].rgb(0xFF0000, 42);
-			//LEDs.off();
-			LEDs.led[0].off();
-			LEDs.led[1].off();
-			//LEDs.led[2].on();
-
-			ledPrint("8");
-
-			LED_UPDATE;
 			break;
 		}
 
@@ -244,33 +235,121 @@ void ledInit(void)
 	}	
 }
 
-void ledPrint(const char* c)
+void ledUpdate(void)
+{
+	LEDs.update(LED_LINE);
+	ledUpdateFlag = 0;
+}
+
+void ledPrint(const char* str)
 {
 	char bitmap = 0;
 
 	// Loop through input four characters
-	for (uint8_t i = 1; i < 2; i++) // SOON: i < 5
+	#ifdef DEBUG
+	for (uint8_t i = 0; i < 1; i++)
+	#else
+	// Use all four LED panels
+	for (uint8_t i = 0; i < 4; i++)
+	#endif // DEBUG
 	{
 		// If NULL char is found, break
-		if (!c[i - 1]) break;
+		if (!str[i]) break;
 
 		// Get bitmap for character
-		bitmap = getCharBitmap(c[i - 1]);
+		bitmap = getCharBitmap(str[i]);
+
+		logf("ch %d\n", bitmap);
 
 		// Turn on or off LEDs using character bitmap
 		for (uint8_t bIdx = 0; bIdx < 7; bIdx++)
 		{
-			if (SSTD_BIT(bitmap, bIdx)) LEDs.led[ledCharIdx[i] + bIdx].on();
-				else LEDs.led[ledCharIdx[i] + bIdx].off();
+			if (SSTD_BIT(bitmap, bIdx)) LEDs.led[ledCharIdx[i + 1] + bIdx].on();
+				else LEDs.led[ledCharIdx[i + 1] + bIdx].off();
 		}
 	}
+
+	// Set LED update flag
+	ledUpdateFlag = 1;	
 }
 
-void toggleSemicolon(void)
+void ledSmToggle(void)
 {
 	// Toggle semicolon LEDs
 	LEDs.led[LED_IDX_DOT].toggle();
 	LEDs.led[LED_IDX_DOT + 1].toggle();
+
+	// Set LED update flag
+	ledUpdateFlag = 1;
 }
+
+void ledSmOff(void)
+{
+	// Turn off semicolon LEDs
+	LEDs.led[LED_IDX_DOT].off();
+	LEDs.led[LED_IDX_DOT + 1].off();
+
+	// Set LED update flag
+	ledUpdateFlag = 1;	
+}
+
+void ledSmOn(void)
+{
+	// Turn on semicolon LEDs
+	LEDs.led[LED_IDX_DOT].on();
+	LEDs.led[LED_IDX_DOT + 1].on();
+
+	// Set LED update flag
+	ledUpdateFlag = 1;	
+}
+
+void ledPanelOff(const led_panel_t panel)
+{
+	// Turn off all LED segments for given LED panel
+	for (uint8_t i = 0; i < 7; i++) LEDs.led[ledCharIdx[panel] + i].off();
+
+	// Set LED update flag
+	ledUpdateFlag = 1;
+}
+
+void displayPercent(void)
+{
+	// Display first part of percent sign
+	uint8_t ledPercentBitmap = LED_S1 | LED_S2 | LED_S6 | LED_S7;
+	displayBitmap(led_panel_t::LED_PANEL3, ledPercentBitmap);
+
+	// Display second part of percent sign
+	ledPercentBitmap = LED_S3 | LED_S4 | LED_S5 | LED_S6;
+	displayBitmap(led_panel_t::LED_PANEL3, ledPercentBitmap);
+}
+
+
+// ----- STATIC FUNCTION DEFINITIONS
+static uint8_t getCharBitmap(const char c)
+{
+	// Loop through character bitmap array
+	for (uint8_t i = 0; i < SSTD_ARRAY(charBitmap); i++)
+	{
+		// If wanted character is found in bitmap array return its bitmap
+		if (charBitmap[i].ch == c) return charBitmap[i].bitmap;
+	}
+
+	// If bitmap is not found, return _
+	return LED_S1;
+}
+
+static void displayBitmap(const led_panel_t panel, const uint8_t bitmap)
+{
+	for (uint8_t i = 0; i < 7; i++)
+	{
+		// If bit i in bitmap is 1, turn on LED, otherwise turn off
+		if (SSTD_BIT(bitmap, i)) LEDs.led[ledCharIdx[panel] + i].on();
+			else LEDs.led[ledCharIdx[panel] + i].off();
+	}
+
+	// Set LED update flag
+	ledUpdateFlag = 1;	
+}
+
 
 // END WITH NEW LINE
