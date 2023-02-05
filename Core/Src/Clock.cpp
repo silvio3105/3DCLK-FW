@@ -26,10 +26,29 @@ This License shall be included in all methodal textual files.
 
 
 // ----- INCLUDE FILES
-#include			<Clock.h>
-#include			<sRTC.h>
-#include			<FWConfig.h>
-#include			<Log.h>
+#include			"Clock.h"
+#include			"sRTC.h"
+#include			"FWConfig.h"
+#include			"Log.h"
+#include			"LED.h"
+
+
+// ----- VARIABLES
+sRTC_time_t rtcTime;
+const char clockDays[7][4] = {
+	"Mon",
+	"Tue",
+	"Wed",
+	"Thu",
+	"Fri",
+	"Sat",
+	"Sun"
+};
+
+const char clockAMPM[2][3] = {
+	"AM",
+	"PM"
+};
 
 
 // ----- OBJECTS
@@ -39,7 +58,7 @@ sRTC sClock(RTC);
 // ----- FUNCTION DEFINITIONS
 void clockInit(void)
 {
-	// For test
+	// SOON: Testing
 	sRTC_time_t time = {
 		sRTC_day_t::THURSDAY,
 		11,
@@ -51,15 +70,12 @@ void clockInit(void)
 		50,
 	};	
 
-	sClock.init(CLOCK_DEF_FORMAT);
+	// Configure RTC
+	sClock.init(CFG_TIME_FORMAT);
 
-	if (!sClock.isSet())
-	{
-		log("Clock lost, reinit...\n");
-		sClock.set(time);
-		log("Clock set!\n");
-	}
-	else log("Clock OK!\n");	
+	// Check if RTC time is set
+	if (!sClock.isSet()) log("Clock lost\n");		
+		else log("Clock OK!\n");	
 }
 
 
