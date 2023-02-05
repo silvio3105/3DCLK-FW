@@ -35,16 +35,31 @@ This License shall be included in all methodal textual files.
 
 // ----- INCLUDE FILES
 #include			"sEEPROM.h"
-#include			"config.h"
+#include			"FWConfig.h"
 
 
 // ----- DEFINES
 // EEPROM SECTORS
-#define EEPROM_CONFIG_START					EEPROM_START /**< @brief EEPROM config sector start address. */
-#define EEPROM_CONFIG_SIZE					128 /**< @brief EEPROM config sector size. */
+#define EEPROM_CONFIG_START					EEPROM_START /**< @brief Config sector start address in EEPROM. */
+#define EEPROM_CONFIG_SIZE					128 /**< @brief Config sector size in EEPROM. */
 
 
-extern sEEPROM EEPROMConfig;
+// CONFIG ADDRESSES
+#define CFG_ADDR_MARK						0 /**< @brief \ref DEVICE_CONFIGURED_MARK address. */
+
+
+// ----- EXTERNS
+extern sEEPROM Config;
+
+
+// ----- FUNCTION DECLARATIONS
+/**
+ * @brief Check storage stuff.
+ * 
+ * @return No return value.
+ */
+void storageInit(void);
+
 
 /** @} */
 
