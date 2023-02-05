@@ -62,6 +62,7 @@ This License shall be included in all functional textual files.
 #define MAX2				SSTD_MAX2 /**< @brief Alias for \ref SSTD_MAX2 */
 #define MAX3				SSTD_MAX3 /**< @brief Alias for \ref SSTD_MAX3 */
 #define ABS					SSTD_ABS /**< @brief Alias for \ref SSTD_ABS */
+#define LIMIT				SSTD_LIMIT /**< @brief Alias for \ref SSTD_LIMIT */
 
 #define BSET				SSTD_BIT_SET /**< @brief Alias for \ref SSTD_BIT_SET */
 #define BCLEAR				SSTD_BIT_CLEAR /**< @brief Alias for \ref SSTD_BIT_CLEAR */
@@ -141,6 +142,17 @@ This License shall be included in all functional textual files.
  */
 #define SSTD_ABS(_in) \
 	((_in) < 0) ? (_in) * (-1) : (_in)
+
+/**
+ * @brief Limit/constrain value \c _in between \c _low and \c _high
+ * 
+ * @param _in Input value.
+ * @param _low Low limit value.
+ * @param _high High limit value.
+ * 
+ */
+#define SSTD_LIMIT(_in, _low, _high) \
+	(((_in) < (_low)) ? (_low) : (((_in) > (_high)) ? (_high) : (_in)))
 
 
 // BITFIELDS OPERATIONS
@@ -698,6 +710,25 @@ namespace sStd
 	T abs(T input)
 	{
 		return SSTD_ABS(input);
+	}
+
+	/**
+	 * @brief Limit/constrain value \c in between \c low and \c high
+	 * 
+	 * @tparam Tin \c in data type.
+	 * @tparam Tlh \c low and \c high data type.
+	 * @param in Input value.
+	 * @param low Low limit value.
+	 * @param high High limit value.
+	 * @return \c in value if it is between \c low and \c high
+	 * @return \c min value if \c in is smaller than \c min
+	 * @return \c max value if \c in is greater than \c max
+	 * @return Return data type is \c Tlh
+	 */
+	template<typename Tin, typename Tlh>
+	Tlh limit(Tin in, Tlh low, Tlh high)
+	{
+		return SSTD_LIMIT(in, low, high);
 	}
 
 	/**
