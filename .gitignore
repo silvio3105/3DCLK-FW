@@ -2,3 +2,4 @@
 .releases
 main.c
 Makefile
+*.jlink
