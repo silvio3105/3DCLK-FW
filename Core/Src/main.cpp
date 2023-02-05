@@ -71,12 +71,13 @@ const Build buildInfo __attribute__((section(".buildData"))) = {
  * 
  * Bit 0: Temperature & humidity sensor init.
  * Bit 1: LED line init.
+ * Bit 2: BLE init.
  */
 uint8_t initFlags = 0;
+volatile uint8_t wakeup = 1; /**< @brief RTC wake up flag. */
 uint8_t resetFlags = 0; /**< @brief Reset flags from RCC:CSR. */
 
 // SOON: Just for testing
-volatile uint8_t time = 0;
 volatile uint32_t tick = 0;
 
 
@@ -163,58 +164,109 @@ int main(void)
 	// ADC
 	LL_ADC_Enable(ADC1);
 
-
-	uint8_t x = 100;
-	uint8_t rh = 0;
-	int16_t temp = 0;
-
 	// Feed the dog!
 	#ifndef DEBUG
 	Dog.feed();
 	#endif // DEBUG	
 
-	static const char days[7][4] = {
-		"Mon",
-		"Tue",
-		"Wed",
-		"Thu",
-		"Fri",
-		"Sat",
-		"Sun"
-	};
 
-	static const char pm[2][3] = {
-		"AM",
-		"PM"
-	};
-
-	sRTC_time_t c;
-	sClock.enableWakeup(SYS_WAKEUP_CLOCK, SYS_WAKEUP);
-
+	// Lets roll!
 	while (1)
 	{
-		if (time)
+		// If BLE connection was altered
+		if (bleConnAltered)
 		{
-			time = 0;
+			// Reset flag
+			bleConnAltered = 0;
 
-			sClock.get(c);
-			logf("Date: %s %02d.%02d.%04d.\n", days[c.weekDay - 1], c.day, c.month, c.year + 2000);
-			logf("Time: %02d:%02d:%02d %s\n", c.hour, c.minute, c.second, pm[c.ampm]);	
+			// If BLE has new connection
+			if (BLE.isConnected() == SBLE_OK)
+			{
+				log("BLE connected\n");
+
+				// Change LED color
+				LEDs.rgb(LED_COLOR_BLE_CONN, LED_BRGHT_BLE_CONN);
+				ledUpdate();
+
+				// Start temperature and RH measurment
+				TnH.measure(TNH_MEASURE_TYPE);
+
+				// Just to make sure BLE will print the message below
+				delay(250); // SOON: Test it for lowest value
+
+				// Print welcome message
+				BLE.printf("\n3D Clock\nFW: %s\nHW: %s\nBuild: %s\nReset: %d\n%sType help for list of commands\n", buildInfo.FW, buildInfo.HW, buildInfo.DATE, resetFlags, sClock.isSet() ? "\0" : "Clock lost\n");
+
+				// Print current RTC time is RTC time is set
+				//if (sClock.isSet())
+				if (1) // SOON: For testing
+				{
+					// Get RTC time
+					clockGetTime();
+
+					// Print RTC time over BLE
+					blePrintRTC();
+				}
+
+				// Print temperature and RH
+				blePrintTnH();			
+			}
+			else
+			{
+				log("BLE disconnected\n");
+
+				LEDs.rgb(LED_COLOR_BLE_DISC, LED_BRGHT_BLE_DISC);
+				ledUpdate();
+
+				// Just for LED notification for altered BLE connection
+				delay(250);
+
+				// Revert LED color
+				// SOON: Testing
+				LEDs.rgb(50, 50, 50, 13);
+				ledUpdate();
+			}
+		}
 
 
-			TnH.clear();
-			TnH.measure(SHT40_meas_t::TRH_H);
-
-			x = TnH.rh(rh);
-			logf("RH[%d]: %d%%\n", x, rh);
-
-			x = TnH.temperature(temp);
-			logf("T[%d]: %d°C\n\n", x, temp);
 
 
+		// SOON: Testing
+		if (wakeup)
+		{
+			log("RTC Wakeup\n");
+
+			// Start RTC wakeup timer
 			sClock.enableWakeup(SYS_WAKEUP_CLOCK, SYS_WAKEUP);
-		}	
 
+			// Measure TnH stuff
+			TnH.measure(TNH_MEASURE_TYPE);
+
+			// Reset wakeup flag
+			wakeup = 0;
+
+			// Print TnH stuff if BLE has connection
+			if (BLE.isConnected()) blePrintTnH();
+
+			// If RTC time is set
+			if (sClock.isSet())
+			{
+				// Get RTC time
+				clockGetTime();
+
+				// Print RTC time if BLE has connection
+				if (BLE.isConnected()) blePrintRTC();
+			}
+			else if (!BLE.isConnected()) // If BLE has no connection
+			{
+				log("RTC not set\n");
+				
+				// Display right aligned "RST" (don't remove space before RST)
+				LEDs.rgb(LED_COLOR_ERROR, LED_BRGHT_ERROR); // SOON: Replace with custom config
+				ledPrint("-RST");
+			}
+		}	
+/*
 		LL_ADC_REG_StartConversion(ADC1);
 		while (LL_ADC_REG_IsConversionOngoing(ADC1));
 		uint16_t ldr = LL_ADC_REG_ReadConversionData12(ADC1);
@@ -225,7 +277,11 @@ int main(void)
 		LEDs.brightness(led_ldr);
 		LEDs.update(LED_LINE);
 
-		delay(250);
+		delay(250);*/
+
+
+		// If LED update is needed
+		if (ledUpdateFlag) ledUpdate();
 
 		// Feed the dog!
 		#ifndef DEBUG
