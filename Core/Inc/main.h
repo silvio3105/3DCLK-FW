@@ -51,7 +51,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include			"config.h"
+#include			"FWConfig.h"
 
 /* USER CODE END Includes */
 
@@ -72,7 +72,8 @@ struct Build {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
+extern volatile uint32_t tick;
+extern uint8_t initFlags;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -88,7 +89,7 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define LDR_Pin LL_GPIO_PIN_0
+/*#define LDR_Pin LL_GPIO_PIN_0
 #define LDR_GPIO_Port GPIOA
 #define TX_Pin LL_GPIO_PIN_2
 #define TX_GPIO_Port GPIOA
@@ -106,7 +107,7 @@ void Error_Handler(void);
 #define BLE_RX_Pin LL_GPIO_PIN_10
 #define BLE_RX_GPIO_Port GPIOA
 #define BLE_RST_Pin LL_GPIO_PIN_3
-#define BLE_RST_GPIO_Port GPIOB
+#define BLE_RST_GPIO_Port GPIOB*/
 #ifndef NVIC_PRIORITYGROUP_0
 #define NVIC_PRIORITYGROUP_0         ((uint32_t)0x00000007) /*!< 0 bit  for pre-emption priority,
                                                                  4 bits for subpriority */
@@ -123,7 +124,7 @@ void Error_Handler(void);
 /* USER CODE BEGIN Private defines */
 
 // SNIPPETS
-#define delay					LL_mDelay
+#define delay					LL_mDelay /**< @brief Alias for LL_mDelay. */
 
 // BITFIELDS
 #define INIT_TNH_POS			0
@@ -132,6 +133,9 @@ void Error_Handler(void);
 #define INIT_LED_POS			1
 #define INIT_LED_MASK			0b00000010
 #define INIT_LED				(1 << INIT_LED_POS)
+#define INIT_BLE_POS			2
+#define INIT_BLE_MASK			0b00000100
+#define INIT_BLE				(1 << INIT_BLE_POS)
 
 /* USER CODE END Private defines */
 

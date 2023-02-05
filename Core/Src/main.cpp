@@ -26,7 +26,7 @@ This License shall be included in all methodal textual files.
 
 // ----- INCLUDE FILES
 #include 			"main.h"
-#include			"config.h"
+#include			"FWConfig.h"
 #include			"init.h"
 #include			"sStd.h"
 #include			"SHT40.h"
@@ -34,12 +34,23 @@ This License shall be included in all methodal textual files.
 #include			"sWatchdog.h"
 #include			"sRTC.h"
 #include			"sEEPROM.h"
+#include			"sBLE.h"
 
 #include			"LED.h"
 #include			"TnH.h"
 #include			"Log.h"
 #include			"Clock.h"
 #include			"Storage.h"
+#include			"BLE.h"
+
+
+// ----- STATIC FUNCTION DECLARATIONS
+/**
+ * @brief Get reset reason from RCC.
+ * 
+ * @return No return value.
+ */
+static void getResetReason(void);
 
 
 // ----- VARIABLES
@@ -50,8 +61,8 @@ This License shall be included in all methodal textual files.
  * Offset is \c 0xC0
  */
 const Build buildInfo __attribute__((section(".buildData"))) = {
-	FW_VER, /**< @brief Firmware version string. */
-	HW_VER, /**< @brief Hardware version string. */
+	""FW_NAME" "FW_VER"", /**< @brief Build version. */
+	HW_VER, /**< @brief Hardware version. */
 	__DATE__ /**< @brief Build date. */
 };
 
@@ -64,22 +75,14 @@ const Build buildInfo __attribute__((section(".buildData"))) = {
 uint8_t initFlags = 0;
 uint8_t resetFlags = 0; /**< @brief Reset flags from RCC:CSR. */
 
-// ----- OBJECTS
-// Watchdog object
-iDog Dog(DOG_HANDLE, DOG_RELOAD, DOG_PRESCALER, DOG_MODE);
-
-
-// ----- STATIC FUNCTION DECLARATIONS
-/**
- * @brief Get reset reason from RCC.
- * 
- * @return No return value.
- */
-static void getResetReason(void);
-
-
+// SOON: Just for testing
 volatile uint8_t time = 0;
 volatile uint32_t tick = 0;
+
+
+// ----- OBJECTS
+iDog Dog(DOG_HANDLE, DOG_RELOAD, DOG_PRESCALER, DOG_MODE);
+
 
 // ----- APPLICATION ENTRY POINT
 int main(void)
@@ -139,29 +142,23 @@ int main(void)
 	delay(1000);
 	#endif // DEBUG
 
+	// Config init
+	// SOON: Add default config init
+
+	// Storage init
+	storageInit();
+
 	// LED line init
 	ledInit();
+
+	// BLE init
+	bleInit();
 
 	// Temperature & humidity sensor init
 	tnhInit();
 
 	// Clock init
 	clockInit();
-
-
-	// EEPROM TEST
-	uint32_t val[] = { 1, 10, 100, 0, 127 };
-	//EEPROMConfig.write(0, val, sizeof(val));
-	memset(val, 0xFF, sizeof(val));
-	EEPROMConfig.read(0, val, sizeof(val));
-	log("\n");
-	for (uint8_t i = 0; i < 5; i++) logf("- Value %d: %d\n", i + 1, val[i]);
-	//EEPROMConfig.erase(0, 1);
-	memset(val, 0xFF, sizeof(val));
-	EEPROMConfig.read(0, val, sizeof(val));
-	for (uint8_t i = 0; i < 5; i++) logf("- Value %d: %d\n", i + 1, val[i]);
-	log("\n");
-
 
 	// ADC
 	LL_ADC_Enable(ADC1);
@@ -192,13 +189,13 @@ int main(void)
 	};
 
 	sRTC_time_t c;
-	sClock.enableWakeup(sRTC_WUT_clock_t::CK_SPRE, 10);
+	sClock.enableWakeup(SYS_WAKEUP_CLOCK, SYS_WAKEUP);
 
 	while (1)
 	{
 		if (time)
 		{
-			/*time = 0;
+			time = 0;
 
 			sClock.get(c);
 			logf("Date: %s %02d.%02d.%04d.\n", days[c.weekDay - 1], c.day, c.month, c.year + 2000);
@@ -213,34 +210,22 @@ int main(void)
 
 			x = TnH.temperature(temp);
 			logf("T[%d]: %d°C\n\n", x, temp);
-*/
 
-			//sClock.enableWakeup(sRTC_WUT_clock_t::CK_SPRE, 10);
+
+			sClock.enableWakeup(SYS_WAKEUP_CLOCK, SYS_WAKEUP);
 		}	
 
-		/*LL_ADC_REG_StartConversion(ADC1);
+		LL_ADC_REG_StartConversion(ADC1);
 		while (LL_ADC_REG_IsConversionOngoing(ADC1));
 		uint16_t ldr = LL_ADC_REG_ReadConversionData12(ADC1);
-		logf("LDR: %d\n", ldr);
 
-		//ldr = sStd::scale<uint16_t>(ldr, 60, 600, 1, 100);
-
-		if (ldr > 90) ldr = 90;
-		if (ldr < 60) ldr = 60;
-
+		ldr = sStd::limit<uint16_t, uint16_t>(ldr, 60, 90);
 		uint8_t led_ldr = SSTD_SCALE(ldr, 60, 90, 1, 100);
-
-		//logf("LED: %d%%\n", led_ldr);
 
 		LEDs.brightness(led_ldr);
 		LEDs.update(LED_LINE);
 
-		delay(2500);*/
-
-		if ((USART1->ISR & USART_ISR_RXNE))
-		{
-			logf("%c", USART1->RDR);
-		}
+		delay(250);
 
 		// Feed the dog!
 		#ifndef DEBUG
@@ -259,5 +244,6 @@ static void getResetReason(void)
 	// Reset control status register
 	RCC->CSR |= RCC_CSR_RMVF;
 }
+
 
 // END WITH NEW LINE
