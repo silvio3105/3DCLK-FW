@@ -28,7 +28,7 @@ This License shall be included in all methodal textual files.
 // ----- INCLUDE FILES
 #include			<Clock.h>
 #include			<sRTC.h>
-#include			<config.h>
+#include			<FWConfig.h>
 #include			<Log.h>
 
 

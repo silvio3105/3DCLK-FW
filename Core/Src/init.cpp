@@ -94,6 +94,8 @@ void SystemClock_Config(void)
 	LL_RCC_SetUSARTClockSource(LL_RCC_USART1_CLKSOURCE_HSI);
 	LL_RCC_SetUSARTClockSource(LL_RCC_USART2_CLKSOURCE_PCLK1);
 	LL_RCC_SetI2CClockSource(LL_RCC_I2C1_CLKSOURCE_PCLK1);
+
+	SysTick_Config(16000000 / 1000);
 }
 
 /**

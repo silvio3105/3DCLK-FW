@@ -62,11 +62,11 @@ static void UART2Out(const char* buffer, const uint16_t len)
 {
 	for (uint16_t i = 0; i < len; i++)
 	{
-		// Clock out data
-		USART2->TDR = buffer[i];
-
 		// Wait for transfer complete flag
 		while (!(USART2->ISR & USART_ISR_TC)); 
+
+		// Clock out data
+		USART2->TDR = buffer[i];
 	}
 }
 #endif // DEBUG

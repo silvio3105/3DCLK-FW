@@ -29,7 +29,7 @@ This License shall be included in all methodal textual files.
 #define _INIT_H
 
 // ----- INCLUDE FILES
-#include			"config.h"
+#include			"FWConfig.h"
 
 
 // ----- FUNCTION DECLARATIONS
