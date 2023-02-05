@@ -30,6 +30,7 @@ This License shall be included in all methodal textual files.
 #include			"main.h"
 #include			"Log.h"
 #include			"sStd.h"
+#include			"TnH.h"
 
 
 // ----- STATIC FUNCTION DECLARATIONS
@@ -38,6 +39,10 @@ static void bleRX(char* str, uint8_t len, const char stopChar);
 static void bleSysKey(void);
 static void bleReset(void);
 static uint8_t bleStatus(void);
+
+
+// ----- VARIABLES
+volatile uint8_t bleConnAltered = 0; /**< @brief Flag for altered BLE connection. */
 
 
 // ----- OBJECTS
@@ -75,6 +80,16 @@ void bleConfig(void)
 
 }
 
+void blePrintTnH(void)
+{
+	int16_t tnh = 0;
+
+	// Print RH if is it calculated
+	if (TnH.rh((uint8_t&)tnh) == SHT40_OK) BLE.printf("Relative Humidity: %d%%\n", tnh);
+
+	// Print temperature if is it calculated
+	if (TnH.temperature(tnh) == SHT40_OK) BLE.printf("Temperature: %d°C\n", tnh); // SOON: Adjust for °F	
+}
 
 
 // ----- STATIC FUNCTION DEFINITIONS
@@ -133,7 +148,7 @@ static void bleReset(void)
 
 static uint8_t bleStatus(void)
 {
-	if (LL_GPIO_ReadInputPort(BLE_LED_GPIO_Port) & BLE_LED_Pin) return SBLE_NOK;
+	if (LL_GPIO_ReadInputPort(BLE_LED_GPIO_Port) & BLE_LED_Pin) return SBLE_OK;
 	
 	return SBLE_NOK;
 }

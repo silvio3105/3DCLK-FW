@@ -28,17 +28,50 @@ This License shall be included in all methodal textual files.
 #define _BLE_H_
 
 // ----- INCLUDE FILES
-#include			<sBLE.h>
-#include			<FWConfig.h>
+#include			"sBLE.h"
+#include			"FWConfig.h"
+#include			"Clock.h"
 
 
 // ----- EXTERNS
 extern sBLE_HM BLE;
+extern volatile uint8_t bleConnAltered;
 
 
 // ----- FUNCTION DECLARATIONS
+/**
+ * @brief Init BLE module.
+ * 
+ * @return No return value.
+ */
 void bleInit(void);
+
+/**
+ * @brief Configure BLE module.
+ * 
+ * @return No return value.
+ */
 void bleConfig(void);
+
+/**
+ * @brief Print temperature & relative humidity over BLE.
+ * 
+ * @return No return value.
+ * 
+ * @warning \c measure method must be called before calling this function!
+ */
+void blePrintTnH(void);
+
+/**
+ * @brief Print RTC time and date over BLE.
+ * 
+ * @return No return value.
+ */
+inline void blePrintRTC(void)
+{
+	// SOON: Adjust for 24/AM-PM time formar
+	BLE.printf("Date: %s %02d. %02d. %d.\nTime: %02d:%02d:%02d %s\n", clockDays[clockGetWeekDay() - 1], clockGetDay(), clockGetMonth(), clockGetYear(), clockGetHour(), clockGetMinute(), clockGetSecond(), clockAMPM[clockGetAMPM()]);
+}
 
 
 
