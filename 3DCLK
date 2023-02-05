@@ -51,7 +51,7 @@ DEF_LIB = 0
 PRINT_VER = 0
 
 # MAKEFILE FILE NAME
-MAKEFILE = mk
+MAKEFILE = 3DCLK
 
 # JLINK SCRIPTS
 FLASH_SCRIPT = JLink_Flash.jlink
@@ -106,7 +106,9 @@ Core/Src/sRTC.cpp \
 Core/Src/Clock.cpp \
 Core/Src/sADC.cpp \
 Core/Src/sEEPROM.cpp \
-Core/Src/Storage.cpp
+Core/Src/Storage.cpp \
+Core/Src/sBLE.cpp \
+Core/Src/BLE.cpp
 
 
 # ASSEMBLER UNITS
@@ -149,7 +151,7 @@ C_DEFS +=  \
 -DVDD_VALUE=3300 \
 -DPREFETCH_ENABLE=0 \
 -DINSTRUCTION_CACHE_ENABLE=1 \
--DDATA_CACHE_ENABLE=1 \
+-DDATA_CACHE_ENABLE=1
 
 
 #######################################
