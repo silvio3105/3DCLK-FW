@@ -58,7 +58,8 @@ enum display_info_t : uint8_t {
 	DISPLAY_TEMP,
 	DISPLAY_RH,
 	DISPLAY_ERROR,
-	DISPLAY_CUSTOM
+	DISPLAY_CUSTOM,
+	DISPLAY_OFF
 };
 
 
@@ -68,17 +69,69 @@ enum display_info_t : uint8_t {
  * 
  * @note Struct is aligned by 2 bytes.
  */
-struct ledChar
-{
+struct ledChar {
 	const char ch = '\0'; /**< @brief 7-segment character. */
 	const uint8_t bitmap = 0b00000000; /**< @brief Bitmap of \ref ch character(LSB->MSB). */
 } __attribute__((packed, aligned(2)));
 
 
+struct ledDisplayInfo {
+	void (*infoHandler)(void);
+	uint8_t durationTicks;
+};
+
+
+// ----- CLASSES
+template<uint8_t max>
+class LedDisplay {
+	// PUBLIC STUFF
+	public:
+	// CONSTRUCTOR & DECONSTRUCTOR DECLARATIONS
+	LedDisplay(ledDisplayInfo* inputList)
+	{
+		list = inputList;
+	}
+
+	~LedDisplay(void)
+	{
+		list = nullptr;
+	}
+
+	// METHOD DECLARATIONS
+	void tick(void)
+	{
+		// Increase tick counter
+		tickCounter++;
+		
+		// If tick counter is greater than wanted
+		if (tickCounter == list[currentInfo].durationTicks)
+		{
+			// Reset tick counter
+			tickCounter = 0;
+
+			// Move to next info
+			currentInfo++;
+			if (currentInfo == maxInfo) currentInfo = 0;
+		}
+		
+		// Call display info handler
+		list[currentInfo].infoHandler();
+	}
+
+	// PRIVATE STUFF
+	private:
+	// VARIABLES
+	ledDisplayInfo* list = nullptr;
+	uint8_t maxInfo = max;
+	uint8_t currentInfo = 0;
+	uint8_t tickCounter = 0;
+};
+
+
 // ----- EXTERNS
 extern ProgLED<LEDS, LED_FORMAT> LEDs;
-extern const ledChar charBitmap[]; // SOON: Test
 extern uint8_t ledUpdateFlag;
+extern LedDisplay<LED_INFO_MAX> Display;
 
 
 // ----- FUNCTION DECLARATIONS
@@ -128,7 +181,6 @@ void ledSmOn(void);
  * @return No return value.
  */
 void ledUpdate(void);
-
 
 #endif // _LED_H_
 
