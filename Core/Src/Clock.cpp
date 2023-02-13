@@ -71,7 +71,7 @@ void clockInit(void)
 	};	
 
 	// Configure RTC
-	sClock.init(CFG_TIME_FORMAT);
+	sClock.init(CFG_TIME_FORMAT, &time);
 
 	// Check if RTC time is set
 	if (!sClock.isSet()) log("Clock lost\n");		

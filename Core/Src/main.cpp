@@ -198,8 +198,7 @@ int main(void)
 				BLE.printf("\n3D Clock\nFW: %s\nHW: %s\nBuild: %s\nReset: %d\n%sType help for list of commands\n", buildInfo.FW, buildInfo.HW, buildInfo.DATE, resetFlags, sClock.isSet() ? "\0" : "Clock lost\n");
 
 				// Print current RTC time is RTC time is set
-				//if (sClock.isSet())
-				if (1) // SOON: For testing
+				if (sClock.isSet())
 				{
 					// Get RTC time
 					clockGetTime();
@@ -229,24 +228,19 @@ int main(void)
 		}
 
 
-
-
 		// SOON: Testing
 		if (wakeup)
 		{
 			log("RTC Wakeup\n");
 
-			// Start RTC wakeup timer
-			sClock.enableWakeup(SYS_WAKEUP_CLOCK, SYS_WAKEUP);
-
-			// Measure TnH stuff
-			TnH.measure(TNH_MEASURE_TYPE);
-
 			// Reset wakeup flag
 			wakeup = 0;
 
-			// Print TnH stuff if BLE has connection
-			if (BLE.isConnected()) blePrintTnH();
+			// Measure LDR
+			LL_ADC_REG_StartConversion(ADC1);
+
+			// Measure TnH stuff
+			TnH.measure(TNH_MEASURE_TYPE);
 
 			// If RTC time is set
 			if (sClock.isSet())
@@ -254,8 +248,11 @@ int main(void)
 				// Get RTC time
 				clockGetTime();
 
-				// Print RTC time if BLE has connection
-				if (BLE.isConnected()) blePrintRTC();
+				// Print RTC time
+				blePrintRTC();
+
+				// Log RTC time
+				logRTC();
 			}
 			else if (!BLE.isConnected()) // If BLE has no connection
 			{
@@ -263,22 +260,27 @@ int main(void)
 				
 				// Display right aligned "RST" (don't remove space before RST)
 				LEDs.rgb(LED_COLOR_ERROR, LED_BRGHT_ERROR); // SOON: Replace with custom config
-				ledPrint("-RST");
+				ledPrint("-RST"); // SOON: Remove - before RST
 			}
-		}	
-/*
-		LL_ADC_REG_StartConversion(ADC1);
-		while (LL_ADC_REG_IsConversionOngoing(ADC1));
-		uint16_t ldr = LL_ADC_REG_ReadConversionData12(ADC1);
 
-		ldr = sStd::limit<uint16_t, uint16_t>(ldr, 60, 90);
-		uint8_t led_ldr = SSTD_SCALE(ldr, 60, 90, 1, 100);
+			// Print TnH stuff
+			blePrintTnH();
 
-		LEDs.brightness(led_ldr);
-		LEDs.update(LED_LINE);
+			// Log TnH stuff
+			logTnH();
 
-		delay(250);*/
+			while (LL_ADC_REG_IsConversionOngoing(ADC1));
+			uint16_t ldr = sStd::limit<uint16_t, uint16_t>(LL_ADC_REG_ReadConversionData12(ADC1), 60, 90);
+			uint8_t led_ldr = SSTD_SCALE(ldr, 60, 90, 1, 100);
+			LEDs.brightness(led_ldr);
+			ledUpdateFlag = 1;
 
+			Display.tick();
+			ledSmOn();
+
+			// Start RTC wakeup timer
+			sClock.enableWakeup(SYS_WAKEUP_CLOCK, SYS_WAKEUP);					
+		}
 
 		// If LED update is needed
 		if (ledUpdateFlag) ledUpdate();
