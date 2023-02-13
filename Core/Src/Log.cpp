@@ -28,10 +28,11 @@ This License shall be included in all methodal textual files.
 
 // ----- INCLUDE FILES
 #include			"Log.h"
+#include			"TnH.h"
 
 
-// ----- FUNCTION DECLARATIONS
 #ifdef DEBUG
+// ----- FUNCTION DECLARATIONS
 /**
  * @brief Handler for transmitting characters over UART.
  * 
@@ -40,23 +41,37 @@ This License shall be included in all methodal textual files.
  * @return No return value.
  */
 static void UART2Out(const char* buffer, const uint16_t len);
-#endif // DEBUG
 
 
 // ----- OBJECTS
-#ifdef DEBUG
 /**
  * @brief Logger object.
  * 
  * \c LOG_BUFF Buffer size.
  * \c UART2Out Function for handling UART2 transmits.
- * \c [DEBUG] Logger prefix.
  */
 sStd::Logger<LOG_BUFF> Serial = sStd::Logger<LOG_BUFF>(UART2Out);
 #endif // DEBUG
 
 
 // ----- FUNCTION DEFINITIONS
+void logTnH(void)
+{
+	#ifdef DEBUG
+	int8_t tnh = 0;
+
+	// Print temperature if calculated succesfully
+	uint8_t ret = TnH.temperature(tnh);
+	if (ret == SHT40_OK || ret == SHT40_OLD_DATA) logf("Temperature: %d°C\n", tnh); // SOON: Add temp units
+
+	// Print relative humidity if calculated succesfully
+	ret = TnH.rh((uint8_t&)tnh);
+	if (ret == SHT40_OK || ret == SHT40_OLD_DATA) logf("Humidity: %d%%\n", tnh);
+	#endif // DEBUG
+}
+
+
+// ----- STATIC FUNCTION DEFINITIONS
 #ifdef DEBUG
 static void UART2Out(const char* buffer, const uint16_t len)
 {
@@ -70,7 +85,6 @@ static void UART2Out(const char* buffer, const uint16_t len)
 	}
 }
 #endif // DEBUG
-
 
 
 // END WITH NEW LINE

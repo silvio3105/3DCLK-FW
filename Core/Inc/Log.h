@@ -31,6 +31,7 @@ This License shall be included in all methodal textual files.
 // ----- INCLUDE FILES
 #include			"main.h"
 #include			"sStd.h"
+#include			"Clock.h"
 
 
 // ----- MACROS
@@ -47,11 +48,32 @@ This License shall be included in all methodal textual files.
 #endif // DEBUG
 
 
-// ----- EXTERNS
 #ifdef DEBUG
+// ----- EXTERNS
 extern sStd::Logger<LOG_BUFF> Serial;
-#endif // DEBUG
 
+
+// ----- FUNCTION DECLARATIONS
+/**
+ * @brief Log temperature & relative humidity.
+ * 
+ * @return No return value.
+ * 
+ * @warning \c measure method must be called before calling this function!
+ */
+void logTnH(void);
+
+/**
+ * @brief Log RTC time and date.
+ * 
+ * @return No return value.
+ */
+inline void logRTC(void)
+{
+	// SOON: Adjust for 24/AM-PM time format
+	logf("Date: %s %02d. %02d. %d.\nTime: %02d:%02d:%02d %s\n", clockDays[clockGetWeekDay() - 1], clockGetDay(), clockGetMonth(), clockGetYear(), clockGetHour(), clockGetMinute(), clockGetSecond(), clockAMPM[clockGetAMPM()]);
+}
+#endif // DEBUG
 
 #endif // _LOG_H_
 
