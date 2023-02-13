@@ -2,17 +2,26 @@
 ######################################
 # CONFIG
 ######################################
-# CPU CORE
-CPU = -mcpu=cortex-m0plus
+# MAKEFILE FILE NAME
+MAKEFILE = 3DCLK
 
 # CHIP
 CHIP = STM32L051K8
 
 # START ADDRESS FOR .bin FILE
+ifeq ($(CHIP), STM32L051K8)
 ADDR = 0x08000000
+endif
+
+# CPU CORE
+ifeq ($(CHIP), STM32L051K8)
+CPU = -mcpu=cortex-m0plus
+endif
 
 # OUTPUT NAME
+ifeq ($(CHIP), STM32L051K8)
 TARGET = 3DCLK_FW
+endif
 
 # OUTPUT LOCATION
 BUILD_DIR = .build
@@ -50,9 +59,6 @@ DEF_LIB = 0
 # PRINT GCC VERSION AFTER BUILD
 PRINT_VER = 0
 
-# MAKEFILE FILE NAME
-MAKEFILE = 3DCLK
-
 # JLINK SCRIPTS
 FLASH_SCRIPT = JLink_Flash.jlink
 ERASE_SCRIPT = JLink_Erase.jlink
@@ -69,32 +75,20 @@ endif
 
 # CHIP DEFINE
 ifeq ($(CHIP), STM32L051K8)
-C_DEFS += -DSTM32L051xx
+C_DEFS = -DSTM32L051xx
 endif
 
 
 ######################################
-# TRANSLATION UNITS
+# CUSTOM TRANSLATION UNITS
 ######################################
 # C UNITS
-C_SOURCES =  \
-Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_gpio.c \
-Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_adc.c \
-Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_dma.c \
-Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_rcc.c \
-Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_utils.c \
-Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_exti.c \
-Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_i2c.c \
-Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_rtc.c \
-Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_pwr.c \
-Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_tim.c \
-Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_usart.c \
-Core/Src/system_stm32l0xx.c
+C_SOURCES = \
+
 
 # C++ UNITS
 CPP_SOURCES =  \
 Core/Src/main.cpp \
-Core/Src/stm32l0xx_it.cpp \
 Core/Src/init.cpp \
 Core/Src/sStd.cpp \
 Core/Src/SHT40.cpp \
@@ -108,7 +102,31 @@ Core/Src/sADC.cpp \
 Core/Src/sEEPROM.cpp \
 Core/Src/Storage.cpp \
 Core/Src/sBLE.cpp \
-Core/Src/BLE.cpp
+Core/Src/BLE.cpp \
+Core/Src/Pwr.cpp
+
+
+######################################
+# MCU TRANSLATION UNITS
+######################################
+ifeq ($(CHIP), STM32L051K8)
+C_SOURCES +=  \
+Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_gpio.c \
+Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_adc.c \
+Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_dma.c \
+Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_rcc.c \
+Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_utils.c \
+Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_exti.c \
+Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_i2c.c \
+Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_rtc.c \
+Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_pwr.c \
+Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_tim.c \
+Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_usart.c \
+Core/Src/system_stm32l0xx.c
+
+CPP_SOURCES +=  \
+Core/Src/stm32l0xx_it.cpp
+endif
 
 
 # ASSEMBLER UNITS
@@ -125,10 +143,14 @@ AS_INCLUDES =  \
 
 # C/C++ INCLUDE DIRECTORIES
 C_INCLUDES =  \
--ICore/Inc \
+-ICore/Inc
+
+ifeq ($(CHIP), STM32L051K8)
+C_INCLUDES +=  \
 -IDrivers/STM32L0xx_HAL_Driver/Inc \
 -IDrivers/CMSIS/Device/ST/STM32L0xx/Include \
 -IDrivers/CMSIS/Include
+endif
 
 
 ######################################
@@ -139,6 +161,9 @@ AS_DEFS =  \
 
 
 # C/C++ DEFINES
+C_DEFS +=  \
+
+ifeq ($(CHIP), STM32L051K8)
 C_DEFS +=  \
 -DUSE_FULL_LL_DRIVER \
 -DHSE_VALUE=8000000 \
@@ -152,6 +177,7 @@ C_DEFS +=  \
 -DPREFETCH_ENABLE=0 \
 -DINSTRUCTION_CACHE_ENABLE=1 \
 -DDATA_CACHE_ENABLE=1
+endif
 
 
 #######################################
