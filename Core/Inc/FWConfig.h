@@ -69,13 +69,22 @@ This License shall be included in all methodal textual files.
 #define CFG_TIME_FORMAT				sRTC_time_format_t::FORMAT_24H /**< @brief Default time format. */
 
 // SYSTEM STUFF
-#define SYS_WAKEUP					10 /**< @brief System wakeup time in seconds. */
+#define SYS_WAKEUP					3 /**< @brief System wakeup time in seconds. Used as "cycle tick". */
 #define SYS_WAKEUP_CLOCK			sRTC_WUT_clock_t::CK_SPRE /**< @brief RTC wakeup clock for system wakeup. */
 #define SYS_WAKES_IN_MIN			(60 / SYS_WAKEUP) /**< @brief Number of wakeups in 60 seconds. Rounded to lower number(eg., 2.8 = 2). */
+
+// INFO CYCLES
+#define CYCLE_TICK_TIME				2 /**< @brief Number of cycle ticks which RTC time will be displayed. Duration of one cycle tick is defined with \ref SYS_WAKEUP */
+#define CYCLE_TICK_DAY				1 /**< @brief Number of cycle ticks which RTC day will be displayed. Duration of one cycle tick is defined with \ref SYS_WAKEUP */
+#define CYCLE_TICK_DATE				2 /**< @brief Number of cycle ticks which RTC date will be displayed. Duration of one cycle tick is defined with \ref SYS_WAKEUP */
+#define CYCLE_TICK_TEMP				1 /**< @brief Number of cycle ticks which TnH temperature will be displayed. Duration of one cycle tick is defined with \ref SYS_WAKEUP */
+#define CYCLE_TICK_RH				1 /**< @brief Number of cycle ticks which TnH humidity will be displayed. Duration of one cycle tick is defined with \ref SYS_WAKEUP */
+#define CYCLE_TICK_SUM				(CYCLE_TICK_TIME + CYCLE_TICK_DAY + CYCLE_TICK_DATE + CYCLE_TICK_TEMP + CYCLE_TICK_RH) /**< @brief Sum of all cycle ticks. */
 
 // LEDS
 #define LEDS						9 /**< @brief Number of LEDs. */
 #define LED_LINE					ProgLED_line_t::NON_BLOCKING /**< @brief LED line type. */
+#define LED_INFO_MAX				5
 
 // LED DEFAULT COLORS AND BRIGHTNESS
 #define LED_COLOR_BLE_CONN			ProgLED_rgb_t::NEON_GREEN /**< @brief LED color if BLE has connection. */
@@ -86,6 +95,12 @@ This License shall be included in all methodal textual files.
 
 #define LED_COLOR_ERROR				ProgLED_rgb_t::RED /**< @brief LED color for errors. */
 #define LED_BRGHT_ERROR				8 /**< @brief LED brightness for errors. */
+
+#define LED_COLOR_TIME				ProgLED_rgb_t::RED
+#define LED_COLOR_DAY				ProgLED_rgb_t::AMBER
+#define LED_COLOR_DATE				ProgLED_rgb_t::ORANGE
+#define LED_COLOR_TEMP				ProgLED_rgb_t::NEON_GREEN
+#define LED_COLOR_RH				ProgLED_rgb_t::CYAN
 
 // TNH STUFF
 #define TNH_MEASURE_TYPE			SHT40_meas_t::TRH_H /**< @brief Default measure type for temperature and relative humidity. */
