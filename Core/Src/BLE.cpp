@@ -58,9 +58,11 @@ void bleInit(void)
 		// Get BLE module info
 		char output[13] = { '\0' };
 
+		// Set BLE init flag
 		log("BLE init OK!\n");
 		SSTD_BIT_SET(initFlags, INIT_BLE_POS);
 
+		// Print BLE stuff
 		BLE.getName(output);
 		logf("BLE name: %s\n", output);
 
@@ -80,15 +82,29 @@ void bleConfig(void)
 
 }
 
+void blePrintRTC(void)
+{
+	// Abort if BLE is not connected
+	if (!BLE.isConnected()) return;
+
+	// SOON: Adjust for 24/AM-PM time format
+	BLE.printf("Date: %s %02d. %02d. %d.\nTime: %02d:%02d:%02d %s\n", clockDays[clockGetWeekDay() - 1], clockGetDay(), clockGetMonth(), clockGetYear(), clockGetHour(), clockGetMinute(), clockGetSecond(), clockAMPM[clockGetAMPM()]);
+}
+
 void blePrintTnH(void)
 {
-	int16_t tnh = 0;
+	// Abort if BLE is not connected
+	if (!BLE.isConnected()) return;
+
+	int8_t tnh = 0;
 
 	// Print RH if is it calculated
-	if (TnH.rh((uint8_t&)tnh) == SHT40_OK) BLE.printf("Relative Humidity: %d%%\n", tnh);
+	uint8_t ret = TnH.rh((uint8_t&)tnh);
+	if (ret == SHT40_OK || ret == SHT40_OLD_DATA) BLE.printf("Relative Humidity: %d%%\n", tnh);
 
 	// Print temperature if is it calculated
-	if (TnH.temperature(tnh) == SHT40_OK) BLE.printf("Temperature: %d°C\n", tnh); // SOON: Adjust for °F	
+	ret = TnH.temperature(tnh);
+	if (ret == SHT40_OK || ret == SHT40_OLD_DATA) BLE.printf("Temperature: %d°C\n", tnh); // SOON: Adjust for °F	
 }
 
 

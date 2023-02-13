@@ -67,11 +67,7 @@ void blePrintTnH(void);
  * 
  * @return No return value.
  */
-inline void blePrintRTC(void)
-{
-	// SOON: Adjust for 24/AM-PM time formar
-	BLE.printf("Date: %s %02d. %02d. %d.\nTime: %02d:%02d:%02d %s\n", clockDays[clockGetWeekDay() - 1], clockGetDay(), clockGetMonth(), clockGetYear(), clockGetHour(), clockGetMinute(), clockGetSecond(), clockAMPM[clockGetAMPM()]);
-}
+void blePrintRTC(void);
 
 
 
