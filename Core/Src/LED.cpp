@@ -33,6 +33,7 @@ This License shall be included in all methodal textual files.
 #include			"ProgLED.h"
 
 #include			"Log.h"
+#include			"TnH.h"
 
 
 // ----- FUNCTION DECLARATIONS
@@ -68,6 +69,12 @@ static uint8_t getCharBitmap(const char c);
  * @return No return value.
  */
 static void displayBitmap(const led_panel_t panel, const uint8_t bitmap);
+
+static void ledDisplayTime(void);
+static void ledDisplayDay(void);
+static void ledDisplayDate(void);
+static void ledDisplayTemp(void);
+static void ledDsiplayRH(void);
 
 
 // ----- VARIABLES
@@ -135,6 +142,14 @@ const uint8_t ledCharIdx[5] = {
 	LED_IDX_4
 };
 
+ledDisplayInfo ledInfo[LED_INFO_MAX] = {
+	{ ledDisplayTime, CYCLE_TICK_TIME },
+	{ ledDisplayDay, CYCLE_TICK_DAY },
+	{ ledDisplayDate, CYCLE_TICK_DATE },
+	{ ledDisplayTemp, CYCLE_TICK_TEMP },
+	{ ledDsiplayRH, CYCLE_TICK_RH }
+};
+
 uint8_t ledUpdateFlag = 0; /**< @brief LED update flag. If set, LEDs will be updated. */
 display_info_t ledCurrentDisplay = display_info_t::DISPLAY_TIME; /**< @brief Current info displayed with LEDs. */
 
@@ -149,6 +164,8 @@ display_info_t ledCurrentDisplay = display_info_t::DISPLAY_TIME; /**< @brief Cur
  * \c ledPWMStop external function for stopping LED line update.
  */
 ProgLED<LEDS, LED_FORMAT> LEDs = ProgLED<LEDS, LED_FORMAT>(ledPWMStart, ledPWMStop);
+
+LedDisplay<LED_INFO_MAX> Display = LedDisplay<LED_INFO_MAX>(ledInfo);
 
 
 // ----- FUNCTION DEFINITIONS
@@ -218,6 +235,8 @@ void ledInit(void)
 
 			// Set init flag for LED line
 			SSTD_BIT_SET(initFlags, INIT_LED_POS);
+
+			LEDs.rgb(ProgLED_rgb_t::RED, 8);
 			break;
 		}
 
@@ -237,8 +256,8 @@ void ledInit(void)
 
 void ledUpdate(void)
 {
-	LEDs.update(LED_LINE);
 	ledUpdateFlag = 0;
+	LEDs.update(LED_LINE);
 }
 
 void ledPrint(const char* str)
@@ -258,8 +277,6 @@ void ledPrint(const char* str)
 
 		// Get bitmap for character
 		bitmap = getCharBitmap(str[i]);
-
-		logf("ch %d\n", bitmap);
 
 		// Turn on or off LEDs using character bitmap
 		for (uint8_t bIdx = 0; bIdx < 7; bIdx++)
@@ -314,15 +331,14 @@ void ledPanelOff(const led_panel_t panel)
 
 void displayPercent(void)
 {
-	// Display first part of percent sign
+	// Display left part of percent sign
 	uint8_t ledPercentBitmap = LED_S1 | LED_S2 | LED_S6 | LED_S7;
 	displayBitmap(led_panel_t::LED_PANEL3, ledPercentBitmap);
 
-	// Display second part of percent sign
+	// Display right part of percent sign
 	ledPercentBitmap = LED_S3 | LED_S4 | LED_S5 | LED_S6;
-	displayBitmap(led_panel_t::LED_PANEL3, ledPercentBitmap);
+	displayBitmap(led_panel_t::LED_PANEL4, ledPercentBitmap);
 }
-
 
 // ----- STATIC FUNCTION DEFINITIONS
 static uint8_t getCharBitmap(const char c)
@@ -350,6 +366,65 @@ static void displayBitmap(const led_panel_t panel, const uint8_t bitmap)
 	// Set LED update flag
 	ledUpdateFlag = 1;	
 }
+
+static void ledDisplayTime(void)
+{
+	char str[5];
+	LEDs.rgb(LED_COLOR_TIME);
+	snprintf(str, sizeof(str), "%02d%02d", clockGetHour(), clockGetMinute());
+	ledPrint(str);
+	logf("Display[time] -> \"%s\"\n", str);
+}
+
+static void ledDisplayDay(void)
+{
+	char str[5];
+	LEDs.rgb(LED_COLOR_DAY);
+	snprintf(str, sizeof(str), "DAY%d", clockGetWeekDay());
+	ledPrint(str);
+	logf("Display[day] -> \"%s\"\n", str);
+}
+
+static void ledDisplayDate(void)
+{
+	char str[5];
+	LEDs.rgb(LED_COLOR_DATE);
+	snprintf(str, sizeof(str), "%02d%02d", clockGetDay(), clockGetMonth());
+	ledPrint(str);
+	logf("Display[date] -> \"%s\"\n", str);	
+}
+
+static void ledDisplayTemp(void)
+{
+	char str[5];
+	int8_t temp = 0;
+	uint8_t ledPercentBitmap = LED_S3 | LED_S4 | LED_S5 | LED_S6;
+
+	TnH.temperature(temp);
+	temp = sStd::limit<int8_t>(temp, 0, 99);
+
+	LEDs.rgb(LED_COLOR_TEMP);
+	snprintf(str, sizeof(str), "%02d C", temp);
+	ledPrint(str);
+	displayBitmap(led_panel_t::LED_PANEL3, ledPercentBitmap);
+	logf("Display[temp] -> \"%02d°C\"\n", temp);	
+}
+
+static void ledDsiplayRH(void)
+{
+	char str[5];
+	uint8_t rh = 0;
+
+	TnH.rh(rh);
+	if (rh > 99) rh = 99;
+
+	LEDs.rgb(LED_COLOR_RH);
+	snprintf(str, sizeof(str), "%02d", rh);
+	ledPrint(str);
+	displayPercent();
+	logf("Display[rh] -> \"%02d%%\"\n", rh);		
+}
+
 
 
 // END WITH NEW LINE
