@@ -55,6 +55,15 @@ sStd::Logger<LOG_BUFF> Serial = sStd::Logger<LOG_BUFF>(UART2Out);
 
 
 // ----- FUNCTION DEFINITIONS
+void logRTC(void)
+{
+	// Abort if RTC is not set
+	if (!sClock.isSet()) return;
+
+	// SOON: Adjust for 24/AM-PM time format
+	logf("Date: %s %02d. %02d. %d.\nTime: %02d:%02d:%02d %s\n", clockDays[clockGetWeekDay() - 1], clockGetDay(), clockGetMonth(), clockGetYear(), clockGetHour(), clockGetMinute(), clockGetSecond(), clockAMPM[clockGetAMPM()]);
+}
+
 void logTnH(void)
 {
 	#ifdef DEBUG
