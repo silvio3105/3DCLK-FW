@@ -242,19 +242,29 @@ int main(void)
 			// Measure TnH stuff
 			TnH.measure(TNH_MEASURE_TYPE);
 
-			// If RTC time is set
-			if (sClock.isSet())
+			// Get RTC time
+			clockGetTime();
+
+			// Log RTC time
+			logRTC();	
+
+			// Print RTC time over BLE
+			blePrintRTC();	
+
+			// Log TnH stuff
+			logTnH();
+
+			// Print TnH stuff over BLE
+			blePrintTnH();
+
+			// If BLE has connection, display " BLE"
+			if (BLE.isConnected())
 			{
-				// Get RTC time
-				clockGetTime();
-
-				// Print RTC time
-				blePrintRTC();
-
-				// Log RTC time
-				logRTC();
+				LEDs.rgb(LED_COLOR_BLE_CONN, LED_BRGHT_BLE_CONN);
+				ledPrint("-BLE"); // SOON: Remove - before BLE
 			}
-			else if (!BLE.isConnected()) // If BLE has no connection
+
+			if (!BLE.isConnected()) // If BLE has no connection
 			{
 				log("RTC not set\n");
 				
@@ -263,12 +273,7 @@ int main(void)
 				ledPrint("-RST"); // SOON: Remove - before RST
 			}
 
-			// Print TnH stuff
-			blePrintTnH();
-
-			// Log TnH stuff
-			logTnH();
-
+			// Adjust LED brightness
 			while (LL_ADC_REG_IsConversionOngoing(ADC1));
 			uint16_t ldr = sStd::limit<uint16_t, uint16_t>(LL_ADC_REG_ReadConversionData12(ADC1), 60, 90);
 			uint8_t led_ldr = SSTD_SCALE(ldr, 60, 90, 1, 100);

@@ -84,8 +84,8 @@ void bleConfig(void)
 
 void blePrintRTC(void)
 {
-	// Abort if BLE is not connected
-	if (!BLE.isConnected()) return;
+	// Abort if BLE is not connected or RTC is not set
+	if (!BLE.isConnected() || !sClock.isSet()) return;
 
 	// SOON: Adjust for 24/AM-PM time format
 	BLE.printf("Date: %s %02d. %02d. %d.\nTime: %02d:%02d:%02d %s\n", clockDays[clockGetWeekDay() - 1], clockGetDay(), clockGetMonth(), clockGetYear(), clockGetHour(), clockGetMinute(), clockGetSecond(), clockAMPM[clockGetAMPM()]);
