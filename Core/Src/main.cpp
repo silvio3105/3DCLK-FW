@@ -76,8 +76,6 @@ const Build buildInfo __attribute__((section(".buildData"))) = {
 uint8_t initFlags = 0;
 volatile uint8_t wakeup = 1; /**< @brief RTC wake up flag. */
 uint8_t resetFlags = 0; /**< @brief Reset flags from RCC:CSR. */
-
-// SOON: Just for testing
 volatile uint32_t tick = 0;
 
 
@@ -185,7 +183,8 @@ int main(void)
 				log("BLE connected\n");
 
 				// Change LED color
-				LEDs.rgb(LED_COLOR_BLE_CONN, LED_BRGHT_BLE_CONN);
+				LEDs.rgb(LED_COLOR_BLE_CONN);
+				LEDs.brightness(LED_BRGHT_BLE_CONN);
 				ledUpdate();
 
 				// Start temperature and RH measurment
@@ -214,7 +213,8 @@ int main(void)
 			{
 				log("BLE disconnected\n");
 
-				LEDs.rgb(LED_COLOR_BLE_DISC, LED_BRGHT_BLE_DISC);
+				LEDs.rgb(LED_COLOR_BLE_DISC);
+				LEDs.brightness(LED_BRGHT_BLE_DISC);
 				ledUpdate();
 
 				// Just for LED notification for altered BLE connection
@@ -222,13 +222,12 @@ int main(void)
 
 				// Revert LED color
 				// SOON: Testing
-				LEDs.rgb(50, 50, 50, 13);
+				LEDs.rgb(50, 50, 50);
+				LEDs.brightness(13);
 				ledUpdate();
 			}
 		}
 
-
-		// SOON: Testing
 		if (wakeup)
 		{
 			log("RTC Wakeup\n");
@@ -260,7 +259,8 @@ int main(void)
 			// If BLE has connection, display " BLE"
 			if (BLE.isConnected())
 			{
-				LEDs.rgb(LED_COLOR_BLE_CONN, LED_BRGHT_BLE_CONN);
+				LEDs.rgb(LED_COLOR_BLE_CONN);
+				LEDs.brightness(LED_BRGHT_BLE_CONN);
 				ledPrint("-BLE"); // SOON: Remove - before BLE
 			}
 
@@ -269,7 +269,8 @@ int main(void)
 				log("RTC not set\n");
 				
 				// Display right aligned "RST" (don't remove space before RST)
-				LEDs.rgb(LED_COLOR_ERROR, LED_BRGHT_ERROR); // SOON: Replace with custom config
+				LEDs.rgb(LED_COLOR_ERROR); // SOON: Replace with custom config
+				LEDs.brightness(LED_BRGHT_ERROR);
 				ledPrint("-RST"); // SOON: Remove - before RST
 			}
 

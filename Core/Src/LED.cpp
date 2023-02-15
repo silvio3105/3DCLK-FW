@@ -230,13 +230,13 @@ void ledInit(void)
 	{
 		case PROG_LED_OK:
 		{
-			log("LED init OK\n");
+			log("LEDs init OK\n");
 			logf("Total LEDs %d\n", LEDS);
 
 			// Set init flag for LED line
 			SSTD_BIT_SET(initFlags, INIT_LED_POS);
 
-			LEDs.rgb(ProgLED_rgb_t::RED, 8);
+			LEDs.rgb(ProgLED_rgb_t::RED);
 			break;
 		}
 
@@ -369,7 +369,7 @@ static void displayBitmap(const led_panel_t panel, const uint8_t bitmap)
 
 static void ledDisplayTime(void)
 {
-	char str[5];
+	char str[7]; // 5 bytes needed. 7 bytes placed to get rid of -Wformat-truncation
 	LEDs.rgb(LED_COLOR_TIME);
 	snprintf(str, sizeof(str), "%02d%02d", clockGetHour(), clockGetMinute());
 	ledPrint(str);
@@ -378,7 +378,7 @@ static void ledDisplayTime(void)
 
 static void ledDisplayDay(void)
 {
-	char str[5];
+	char str[7]; // 5 bytes needed. 7 bytes placed to get rid of -Wformat-truncation
 	LEDs.rgb(LED_COLOR_DAY);
 	snprintf(str, sizeof(str), "DAY%d", clockGetWeekDay());
 	ledPrint(str);
@@ -387,7 +387,7 @@ static void ledDisplayDay(void)
 
 static void ledDisplayDate(void)
 {
-	char str[5];
+	char str[7]; // 5 bytes needed. 7 bytes placed to get rid of -Wformat-truncation
 	LEDs.rgb(LED_COLOR_DATE);
 	snprintf(str, sizeof(str), "%02d%02d", clockGetDay(), clockGetMonth());
 	ledPrint(str);
@@ -396,7 +396,7 @@ static void ledDisplayDate(void)
 
 static void ledDisplayTemp(void)
 {
-	char str[5];
+	char str[7]; // 5 bytes needed. 7 bytes placed to get rid of -Wformat-truncation
 	int8_t temp = 0;
 	uint8_t ledPercentBitmap = LED_S3 | LED_S4 | LED_S5 | LED_S6;
 
@@ -412,7 +412,7 @@ static void ledDisplayTemp(void)
 
 static void ledDsiplayRH(void)
 {
-	char str[5];
+	char str[7]; // 5 bytes needed. 7 bytes placed to get rid of -Wformat-truncation
 	uint8_t rh = 0;
 
 	TnH.rh(rh);
