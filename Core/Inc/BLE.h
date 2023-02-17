@@ -31,11 +31,13 @@ This License shall be included in all methodal textual files.
 #include			"sBLE.h"
 #include			"FWConfig.h"
 #include			"Clock.h"
+#include			"sStd.h"
 
 
 // ----- EXTERNS
 extern sBLE_HM BLE;
 extern volatile uint8_t bleConnAltered;
+extern sStd::RingBuffer<char, BLE_RX_BUFFER> BLEInput;
 
 
 // ----- FUNCTION DECLARATIONS
