@@ -47,21 +47,6 @@ enum led_panel_t : uint8_t {
 	LED_PANEL4 = 4 /**< @brief Index for fourth LED panel. */
 };
 
-/**
- * @brief Current info displayed with LEDs.
- * 
- */
-enum display_info_t : uint8_t {
-	DISPLAY_TIME = 0,
-	DISPLAY_DAY,
-	DISPLAY_DATE,
-	DISPLAY_TEMP,
-	DISPLAY_RH,
-	DISPLAY_ERROR,
-	DISPLAY_CUSTOM,
-	DISPLAY_OFF
-};
-
 
 // ----- STRUCTS
 /**
@@ -118,6 +103,16 @@ class LedDisplay {
 		list[currentInfo].infoHandler();
 	}
 
+	void reset(void)
+	{
+		// Reset tick counter and info index
+		tickCounter = 0;
+		currentInfo = 0;
+
+		// Call display info handler
+		list[currentInfo].infoHandler();
+	}
+
 	// PRIVATE STUFF
 	private:
 	// VARIABLES
@@ -130,7 +125,6 @@ class LedDisplay {
 
 // ----- EXTERNS
 extern ProgLED<LEDS, LED_FORMAT> LEDs;
-extern uint8_t ledUpdateFlag;
 extern LedDisplay<LED_INFO_MAX> Display;
 
 
