@@ -305,8 +305,17 @@ class sBLE_HM
 	 */
 	void reset(sBLE_action_t type);
 
+	/**
+	 * @brief Format C-string and print it to BLE module.
+	 * 
+	 * @param str Pointer to C-string.
+	 * @param ... Variable arguments
+	 * @return No return value.
+	 * 
+	 * @warning Maximum length of formatted C-string is 128 bytes.
+	 */
 	void printf(const char* str, ...);
-
+	
 
 	/**
 	 * @brief Send text over BLE.
