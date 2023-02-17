@@ -293,16 +293,16 @@ void MX_USART1_UART_Init(void)
 	LL_DMA_SetPeriphSize(DMA1, LL_DMA_CHANNEL_3, LL_DMA_PDATAALIGN_BYTE);
 	LL_DMA_SetMemorySize(DMA1, LL_DMA_CHANNEL_3, LL_DMA_MDATAALIGN_BYTE);
 
-	USART_InitStruct.BaudRate = BLE_BAUD;
+	USART_InitStruct.BaudRate = BLE_UART_BAUD;
 	USART_InitStruct.DataWidth = LL_USART_DATAWIDTH_8B;
 	USART_InitStruct.StopBits = LL_USART_STOPBITS_1;
 	USART_InitStruct.Parity = LL_USART_PARITY_NONE;
 	USART_InitStruct.TransferDirection = LL_USART_DIRECTION_TX_RX;
 	USART_InitStruct.HardwareFlowControl = LL_USART_HWCONTROL_NONE;
 	USART_InitStruct.OverSampling = LL_USART_OVERSAMPLING_16;
-	LL_USART_Init(USART1, &USART_InitStruct);
-	LL_USART_ConfigAsyncMode(USART1);
-	LL_USART_Enable(USART1);
+	LL_USART_Init(BLE_UART, &USART_InitStruct);
+	LL_USART_ConfigAsyncMode(BLE_UART);
+	LL_USART_Enable(BLE_UART);
 }
 
 /**
@@ -334,16 +334,16 @@ void MX_USART2_UART_Init(void)
 	GPIO_InitStruct.Alternate = LL_GPIO_AF_4;
 	LL_GPIO_Init(RX_GPIO_Port, &GPIO_InitStruct);
 
-	USART_InitStruct.BaudRate = UART_BAUD;
+	USART_InitStruct.BaudRate = SYS_UART_BAUD;
 	USART_InitStruct.DataWidth = LL_USART_DATAWIDTH_8B;
 	USART_InitStruct.StopBits = LL_USART_STOPBITS_1;
 	USART_InitStruct.Parity = LL_USART_PARITY_NONE;
 	USART_InitStruct.TransferDirection = LL_USART_DIRECTION_TX_RX;
 	USART_InitStruct.HardwareFlowControl = LL_USART_HWCONTROL_NONE;
 	USART_InitStruct.OverSampling = LL_USART_OVERSAMPLING_16;
-	LL_USART_Init(USART2, &USART_InitStruct);
-	LL_USART_ConfigAsyncMode(USART2);
-	LL_USART_Enable(USART2);
+	LL_USART_Init(SYS_UART, &USART_InitStruct);
+	LL_USART_ConfigAsyncMode(SYS_UART);
+	LL_USART_Enable(SYS_UART);
 }
 
 /**
