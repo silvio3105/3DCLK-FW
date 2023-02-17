@@ -104,8 +104,22 @@ This License shall be included in all methodal textual files.
 
 // UARTS
 #ifdef STM32L051K8
-#define UART_BAUD					115200 /**< @brief Baud rate for UART for debugging. */
-#define BLE_BAUD					9600 /**< @brief Baud rate for BLE module communication. */
+#define SYS_UART					USART2 /**< @brief UART for debugging. */
+#define BLE_UART					USART1 /**< @brief UART for BLE module. */					
+#define SYS_UART_BAUD				115200 /**< @brief Baud rate for debugging UART. */
+#define BLE_UART_BAUD				9600 /**< @brief Baud rate for BLE module communication. */
+#endif // STM32L051K8
+
+// LED DATA
+#ifdef STM32L051K8
+#define LED_TIMER					TIM2 /**< @brief Timer PWM for LED data. */
+#define LED_DMA						DMA1 /**< @brief DMA for \c LED_TIMER */
+#define LED_DMA_CH					DMA1_Channel5 /**< @brief DMA channel for \ref LED_TIMER */
+#endif // STM32L051K8
+
+// LDR
+#ifdef STM32L051K8
+#define LDR_ADC						ADC1 /**< @brief ADC for measuring light with LDR. */
 #endif // STM32L051K8
 
 // TEMPERATURE & HUMIDITY SENSOR

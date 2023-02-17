@@ -104,19 +104,19 @@ void DMA1_Channel4_5_6_7_IRQHandler(void)
 {
 	// Transfer Complete on DMA Channel 5
 	// Since only TIM2 CH 0 uses DMA with this IRQ handler, it is not required to do check for interrupt source.
-	// if (DMA1->ISR & DMA_ISR_TCIF5)
+	// if (LED_DMA->ISR & DMA_ISR_TCIF5)
 
 	// Reset compare value
-	TIM2->CCR1 = 0;
+	LED_TIMER->CCR1 = 0;
 
 	// Stop TIM2 Channel 1
-	TIM2->CR1 &= ~TIM_CR1_CEN;	
+	LED_TIMER->CR1 &= ~TIM_CR1_CEN;	
 
 	// Stop DMA Channel 5
-	DMA1_Channel5->CCR &= ~DMA_CCR_EN;	
+	LED_DMA_CH->CCR &= ~DMA_CCR_EN;	
 
 	// Clear DMA Channel 5 interrupt flag
-	DMA1->IFCR |= (DMA_IFCR_CGIF5 | DMA_IFCR_CHTIF5);
+	LED_DMA->IFCR |= (DMA_IFCR_CGIF5 | DMA_IFCR_CHTIF5);
 
 	// Stop LED update
 	LEDs.stop();

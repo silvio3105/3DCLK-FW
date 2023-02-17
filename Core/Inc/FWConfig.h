@@ -105,6 +105,9 @@ This License shall be included in all methodal textual files.
 // TNH STUFF
 #define TNH_MEASURE_TYPE			SHT40_meas_t::TRH_H /**< @brief Default measure type for temperature and relative humidity. */
 
+// BLE STUFF
+#define BLE_RX_BUFFER				64 /**< @brief Size of buffer in bytes for BLE input. */
+
 // DEBUG STUFF
 #ifdef DEBUG
 #define LOG_BUFF					128 /**< @brief Buffer size in bytes for logger. */
