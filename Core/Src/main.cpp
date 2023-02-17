@@ -76,7 +76,7 @@ const Build buildInfo __attribute__((section(".buildData"))) = {
 uint8_t initFlags = 0;
 volatile uint8_t wakeup = 1; /**< @brief RTC wake up flag. */
 uint8_t resetFlags = 0; /**< @brief Reset flags from RCC:CSR. */
-volatile uint32_t tick = 0;
+volatile uint32_t tick = 0; /**< @brief System tick counter. */
 
 
 // ----- OBJECTS
@@ -110,13 +110,13 @@ int main(void)
 	#endif // DEBUG
 
 	// Firmware and hardware info
-	logf("FW: %s\n", buildInfo.FW);
+	logf("\n\nFW: %s\n", buildInfo.FW);
 	logf("HW: %s\n", buildInfo.HW);
 	logf("Build: %s\n", buildInfo.DATE);
 
 	// Reset reason
 	getResetReason();
-	logf("Reset reason: %d\n", resetFlags);	
+	logf("Reset reason: %d\n\n", resetFlags);	
 
 	// GPIO init
 	MX_GPIO_Init();
@@ -160,13 +160,14 @@ int main(void)
 	clockInit();
 
 	// ADC
-	LL_ADC_Enable(ADC1);
+	
 
 	// Feed the dog!
 	#ifndef DEBUG
 	Dog.feed();
 	#endif // DEBUG	
 
+	log("\n");
 
 	// Lets roll!
 	while (1)
@@ -182,11 +183,6 @@ int main(void)
 			{
 				log("BLE connected\n");
 
-				// Change LED color
-				LEDs.rgb(LED_COLOR_BLE_CONN);
-				LEDs.brightness(LED_BRGHT_BLE_CONN);
-				ledUpdate();
-
 				// Start temperature and RH measurment
 				TnH.measure(TNH_MEASURE_TYPE);
 
@@ -194,37 +190,28 @@ int main(void)
 				delay(250); // SOON: Test it for lowest value
 
 				// Print welcome message
-				BLE.printf("\n3D Clock\nFW: %s\nHW: %s\nBuild: %s\nReset: %d\n%sType help for list of commands\n", buildInfo.FW, buildInfo.HW, buildInfo.DATE, resetFlags, sClock.isSet() ? "\0" : "Clock lost\n");
+				BLE.printf("\n3D Clock\nFW: %s\nHW: %s\nBuild: %s\nReset: %d\n%sType help for list of commands\n", buildInfo.FW, buildInfo.HW, buildInfo.DATE, resetFlags, sClock.isSet() ? "\0" : "->> CLOCK LOST\n");
 
-				// Print current RTC time is RTC time is set
-				if (sClock.isSet())
-				{
-					// Get RTC time
-					clockGetTime();
+				// Get RTC time
+				clockGetTime();
 
-					// Print RTC time over BLE
-					blePrintRTC();
-				}
+				// Print RTC time over BLE
+				blePrintRTC();
 
 				// Print temperature and RH
-				blePrintTnH();			
+				blePrintTnH();
+
+				// Display right aligned "BLE" (don't remove space before "BLE")
+				LEDs.rgb(LED_COLOR_BLE_CONN);
+				LEDs.brightness(LED_BRGHT_BLE_CONN);
+				ledPrint("-BLE"); // SOON: Remove "-" before BLE						
 			}
-			else
+			else // BLE disconnected
 			{
 				log("BLE disconnected\n");
 
-				LEDs.rgb(LED_COLOR_BLE_DISC);
-				LEDs.brightness(LED_BRGHT_BLE_DISC);
-				ledUpdate();
-
-				// Just for LED notification for altered BLE connection
-				delay(250);
-
-				// Revert LED color
-				// SOON: Testing
-				LEDs.rgb(50, 50, 50);
-				LEDs.brightness(13);
-				ledUpdate();
+				// Reset display info to default
+				Display.reset();
 			}
 		}
 
@@ -235,8 +222,11 @@ int main(void)
 			// Reset wakeup flag
 			wakeup = 0;
 
+			// Enable LDR ADC
+			LL_ADC_Enable(LDR_ADC);
+
 			// Measure LDR
-			LL_ADC_REG_StartConversion(ADC1);
+			LL_ADC_REG_StartConversion(LDR_ADC);
 
 			// Measure TnH stuff
 			TnH.measure(TNH_MEASURE_TYPE);
@@ -247,49 +237,73 @@ int main(void)
 			// Log RTC time
 			logRTC();	
 
-			// Print RTC time over BLE
-			blePrintRTC();	
-
 			// Log TnH stuff
 			logTnH();
 
-			// Print TnH stuff over BLE
-			blePrintTnH();
-
-			// If BLE has connection, display " BLE"
-			if (BLE.isConnected())
-			{
-				LEDs.rgb(LED_COLOR_BLE_CONN);
-				LEDs.brightness(LED_BRGHT_BLE_CONN);
-				ledPrint("-BLE"); // SOON: Remove - before BLE
-			}
-
-			if (!BLE.isConnected()) // If BLE has no connection
+			 // If RTC is not set
+			if (!sClock.isSet())
 			{
 				log("RTC not set\n");
 				
 				// Display right aligned "RST" (don't remove space before RST)
 				LEDs.rgb(LED_COLOR_ERROR); // SOON: Replace with custom config
-				LEDs.brightness(LED_BRGHT_ERROR);
-				ledPrint("-RST"); // SOON: Remove - before RST
+				LEDs.brightness(LED_BRGHT_ERROR); // SOON: Replace with custom config
+				ledPrint("-RST"); // SOON: Remove "-" before RST
 			}
 
 			// Adjust LED brightness
-			while (LL_ADC_REG_IsConversionOngoing(ADC1));
-			uint16_t ldr = sStd::limit<uint16_t, uint16_t>(LL_ADC_REG_ReadConversionData12(ADC1), 60, 90);
+			while (LL_ADC_REG_IsConversionOngoing(LDR_ADC));
+			uint16_t ldr = sStd::limit<uint16_t, uint16_t>(LL_ADC_REG_ReadConversionData12(LDR_ADC), 60, 90);
+			LL_ADC_Disable(LDR_ADC);
 			uint8_t led_ldr = SSTD_SCALE(ldr, 60, 90, 1, 100);
 			LEDs.brightness(led_ldr);
-			ledUpdateFlag = 1;
 
-			Display.tick();
-			ledSmOn();
+			// Tick display if BLE is not connected
+			if (BLE.isConnected() == SBLE_NOK) Display.tick();
+
+			// Toggle clock :
+			ledSmToggle();
 
 			// Start RTC wakeup timer
 			sClock.enableWakeup(SYS_WAKEUP_CLOCK, SYS_WAKEUP);					
 		}
 
-		// If LED update is needed
-		if (ledUpdateFlag) ledUpdate();
+		// SOON: Replace BLE RX with DMA
+		// If BLE is connected
+		if (BLE.isConnected())
+		{
+			// Clear override error if needed
+			if (BLE_UART->ISR & USART_ISR_ORE)
+			{
+				BLE_UART->ICR |= USART_ICR_ORECF;
+				(void)BLE_UART->RDR;
+			}
+
+			// If new byte is received
+			if (BLE_UART->ISR & USART_ISR_RXNE)
+			{
+				// Store received char
+				char tmp = BLE_UART->RDR;
+
+				// If string end is received
+				if (tmp == '\r')
+				{
+					// Replace \r or \n with \0 char
+					BLEInput.write('\0');
+
+					// Pass whole string to command handler
+
+					// SOON: Echo test
+					char tmpBuff[BLE_RX_BUFFER];
+					BLEInput.read(tmpBuff, BLEInput.used());
+					BLE.printf("echo: %s\n", tmpBuff);
+				}
+				else if (tmp != '\n') BLEInput.write(tmp);
+			}
+		}
+
+		// Update LED display
+		ledUpdate();
 
 		// Feed the dog!
 		#ifndef DEBUG
