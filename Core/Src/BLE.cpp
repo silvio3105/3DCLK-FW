@@ -47,6 +47,7 @@ volatile uint8_t bleConnAltered = 0; /**< @brief Flag for altered BLE connection
 
 // ----- OBJECTS
 sBLE_HM BLE(bleTX, bleRX, bleSysKey, bleReset, bleStatus);
+sStd::RingBuffer<char, BLE_RX_BUFFER> BLEInput;
 
 
 // ----- FUNCTION DEFINITIONS
@@ -114,10 +115,10 @@ static void bleTX(const char* str, uint8_t len)
 	for (uint16_t i = 0; i < len; i++)
 	{
 		// Wait for transfer complete flag
-		while (!(USART1->ISR & USART_ISR_TC)); 
+		while (!(BLE_UART->ISR & USART_ISR_TC)); 
 
 		// Clock out data
-		USART1->TDR = str[i];
+		BLE_UART->TDR = str[i];
 	}
 }
 
@@ -126,17 +127,17 @@ static void bleRX(char* str, uint8_t len, const char stopChar)
 	uint8_t idx = 0;
 
 	// Clear override error
-	USART1->ICR |= USART_ICR_ORECF;
-	(void)USART1->RDR;
+	BLE_UART->ICR |= USART_ICR_ORECF;
+	(void)BLE_UART->RDR;
 
 	// While not all bytes are received
 	do
 	{
 		// If new byte is received
-		if (USART1->ISR & USART_ISR_RXNE)
+		if (BLE_UART->ISR & USART_ISR_RXNE)
 		{
 			// Copy received byte into buffer
-			str[idx] = USART1->RDR;
+			str[idx] = BLE_UART->RDR;
 
 			// Break if stop char is received
 			if (str[idx] == stopChar) break;

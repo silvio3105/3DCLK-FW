@@ -151,7 +151,6 @@ ledDisplayInfo ledInfo[LED_INFO_MAX] = {
 };
 
 uint8_t ledUpdateFlag = 0; /**< @brief LED update flag. If set, LEDs will be updated. */
-display_info_t ledCurrentDisplay = display_info_t::DISPLAY_TIME; /**< @brief Current info displayed with LEDs. */
 
 
 // ----- OBJECTS
@@ -164,7 +163,6 @@ display_info_t ledCurrentDisplay = display_info_t::DISPLAY_TIME; /**< @brief Cur
  * \c ledPWMStop external function for stopping LED line update.
  */
 ProgLED<LEDS, LED_FORMAT> LEDs = ProgLED<LEDS, LED_FORMAT>(ledPWMStart, ledPWMStop);
-
 LedDisplay<LED_INFO_MAX> Display = LedDisplay<LED_INFO_MAX>(ledInfo);
 
 
@@ -179,40 +177,42 @@ static void ledPWMStart(int8_t bit)
 	LEDs.fillBuffer(ledBits, sizeof(ledBits), LEDS, LED_L_VAL, LED_H_VAL);
 
 	// Disable DMA channel
-	DMA1_Channel5->CCR &= ~DMA_CCR_EN;
+	LED_DMA_CH->CCR &= ~DMA_CCR_EN;
 
 	// Clear DMA channel interrupt flags
-	DMA1->IFCR = (DMA_IFCR_CTCIF5 | DMA_IFCR_CHTIF5 | DMA_IFCR_CTEIF5);
+	LED_DMA->IFCR = (DMA_IFCR_CTCIF5 | DMA_IFCR_CHTIF5 | DMA_IFCR_CTEIF5);
 
 	// Set DMA channel data length
-	DMA1_Channel5->CNDTR = 24 * LEDS;
+	LED_DMA_CH->CNDTR = 24 * LEDS;
 
 	// Set DMA channel destination address
-	DMA1_Channel5->CPAR = (uint32_t)(&(TIM2->CCR1));
+	LED_DMA_CH->CPAR = (uint32_t)(&(LED_TIMER->CCR1));
 
 	// Set DMA channel source address
-	DMA1_Channel5->CMAR = (uint32_t)ledBits;
+	LED_DMA_CH->CMAR = (uint32_t)ledBits;
 
 	// Disable Half transfer, transfer completed and transfer error interrupts
-	DMA1_Channel5->CCR &= ~(DMA_CCR_HTIE | DMA_CCR_TCIE | DMA_CCR_TEIE);
+	LED_DMA_CH->CCR &= ~(DMA_CCR_HTIE | DMA_CCR_TCIE | DMA_CCR_TEIE);
 
 	// Enable transfer completed interrupt
-	DMA1_Channel5->CCR |= DMA_CCR_TCIE;
+	LED_DMA_CH->CCR |= DMA_CCR_TCIE;
 
 	// Enable DMA Channel
-	DMA1_Channel5->CCR |=  DMA_CCR_EN;
+	LED_DMA_CH->CCR |=  DMA_CCR_EN;
 
-	// TIM2 PWM
-	// SOON: Add comments for lines below
-	TIM2->CCER &= ~TIM_CCER_CC1E;
-	TIM2->CCER |= TIM_CCER_CC1E;
+	// PWM
+	// Enable capture/compare channel 1
+	LED_TIMER->CCER &= ~TIM_CCER_CC1E;
+	LED_TIMER->CCER |= TIM_CCER_CC1E;
 
-	TIM2->DIER |= (TIM_DIER_CC1DE | TIM_DIER_UDE);
+	// Enable DMA for CC channel 1
+	LED_TIMER->DIER |= (TIM_DIER_CC1DE | TIM_DIER_UDE);
 
-	TIM2->CR1 |= (TIM_CR1_URS | TIM_CR1_ARPE);
+	// Enable auto reload and update for CC1
+	LED_TIMER->CR1 |= (TIM_CR1_URS | TIM_CR1_ARPE);
 
 	// Enable TIM2
-	TIM2->CR1 |= TIM_CR1_CEN;
+	LED_TIMER->CR1 |= TIM_CR1_CEN;
 }
 
 static void ledPWMStop(int8_t bit)
@@ -236,7 +236,9 @@ void ledInit(void)
 			// Set init flag for LED line
 			SSTD_BIT_SET(initFlags, INIT_LED_POS);
 
-			LEDs.rgb(ProgLED_rgb_t::RED);
+			// Turn off LED line
+			LEDs.rgb(ProgLED_rgb_t::BLACK);
+			LEDs.off();
 			break;
 		}
 
@@ -256,7 +258,13 @@ void ledInit(void)
 
 void ledUpdate(void)
 {
+	// Abort if update is not needed
+	if (!ledUpdateFlag) return;
+
+	// Reset update flag
 	ledUpdateFlag = 0;
+
+	// Update LED display
 	LEDs.update(LED_LINE);
 }
 
