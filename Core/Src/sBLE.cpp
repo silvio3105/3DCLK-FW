@@ -60,6 +60,9 @@ uint8_t sBLE_HM::init(void)
 	// Ping module
 	if (ping() == SBLE_OK)
 	{
+		// Reset BLE module
+		//reset(sBLE_action_t::PIN);
+
 		// Configure status output
 		sendCmd("AT+PIO11", 8);
 		//TX("AT+PIO11", 8);
@@ -88,16 +91,14 @@ void sBLE_HM::reset(sBLE_action_t type)
 
 void sBLE_HM::printf(const char* str, ...)
 {
-	char buffer[128];
-
 	// Format text string
 	va_list args;
 	va_start(args, str);	
-	uint8_t len = vsnprintf(buffer, sizeof(buffer), str, args);
+	uint8_t len = vsnprintf(txBuff, sizeof(txBuff), str, args);
 	va_end(args);
 
 	// Send it
-	TX(buffer, len);
+	TX(txBuff, len);
 }
 
 
