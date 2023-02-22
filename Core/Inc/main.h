@@ -75,6 +75,8 @@ struct Build {
 extern volatile uint8_t wakeup;
 extern volatile uint32_t tick;
 extern uint8_t initFlags;
+extern uint8_t resetFlags;
+extern const Build buildInfo;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/

@@ -1,6 +1,0 @@
-r
-h
-loadbin .build/3DCLK_FW.bin,0x08000000
-verifybin .build/3DCLK_FW.bin,0x08000000
-r
-q

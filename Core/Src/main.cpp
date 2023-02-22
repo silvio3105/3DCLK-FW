@@ -158,16 +158,26 @@ int main(void)
 
 	// Clock init
 	clockInit();
-
-	// ADC
 	
+
+	log("\n");
+
+	// Check if RTC is set
+	if (!sClock.isSet())
+	{
+		log("RTC not set\n");
+		
+		// Display right aligned RST text
+		ledShowRST();
+	}
+
+	// Set BLE module into sleep mode
+	BLE.sleep();	
 
 	// Feed the dog!
 	#ifndef DEBUG
 	Dog.feed();
 	#endif // DEBUG	
-
-	log("\n");
 
 	// Lets roll!
 	while (1)
@@ -201,23 +211,29 @@ int main(void)
 				// Print temperature and RH
 				blePrintTnH();
 
-				// Display right aligned "BLE" (don't remove space before "BLE")
-				LEDs.rgb(LED_COLOR_BLE_CONN);
-				LEDs.brightness(LED_BRGHT_BLE_CONN);
-				ledPrint("-BLE"); // SOON: Remove "-" before BLE						
+				// Display right aligned BLE text
+				ledShowBLE();					
 			}
 			else // BLE disconnected
 			{
 				log("BLE disconnected\n");
 
-				// Reset display info to default
-				Display.reset();
+				// Reset display info to default is RTC is set
+				if (sClock.isSet()) Display.reset();
+					else ledShowRST(); // Display RST
+
+				// Set BLE module into sleep mode
+				BLE.sleep();
 			}
 		}
 
+		// SOON: Plan is to use sleep. Plan.
+		// If wake up flag is set
 		if (wakeup)
 		{
+			#ifdef DEBUG_WAKEUP
 			log("RTC Wakeup\n");
+			#endif // DEBUG_WAKEUP
 
 			// Reset wakeup flag
 			wakeup = 0;
@@ -231,35 +247,32 @@ int main(void)
 			// Measure TnH stuff
 			TnH.measure(TNH_MEASURE_TYPE);
 
-			// Get RTC time
-			clockGetTime();
-
-			// Log RTC time
-			logRTC();	
-
-			// Log TnH stuff
-			logTnH();
-
-			 // If RTC is not set
-			if (!sClock.isSet())
+			 // If RTC is set
+			if (sClock.isSet())
 			{
-				log("RTC not set\n");
-				
-				// Display right aligned "RST" (don't remove space before RST)
-				LEDs.rgb(LED_COLOR_ERROR); // SOON: Replace with custom config
-				LEDs.brightness(LED_BRGHT_ERROR); // SOON: Replace with custom config
-				ledPrint("-RST"); // SOON: Remove "-" before RST
+				// Get RTC time
+				clockGetTime();
+
+				// Log RTC time
+				#ifdef DEBUG_WAKEUP
+				logRTC();
+				#endif // DEBUG_WAKEUP
+
+				// Adjust LED brightness
+				while (LL_ADC_REG_IsConversionOngoing(LDR_ADC));
+				uint16_t ldr = sStd::limit<uint16_t, uint16_t>(LL_ADC_REG_ReadConversionData12(LDR_ADC), 60, 90);
+				LL_ADC_Disable(LDR_ADC);
+				uint8_t led_ldr = SSTD_SCALE(ldr, 60, 90, 1, 100);
+				LEDs.brightness(led_ldr);
+
+				// Tick display if BLE is not connected
+				if (BLE.isConnected() == SBLE_NOK) Display.tick();				
 			}
 
-			// Adjust LED brightness
-			while (LL_ADC_REG_IsConversionOngoing(LDR_ADC));
-			uint16_t ldr = sStd::limit<uint16_t, uint16_t>(LL_ADC_REG_ReadConversionData12(LDR_ADC), 60, 90);
-			LL_ADC_Disable(LDR_ADC);
-			uint8_t led_ldr = SSTD_SCALE(ldr, 60, 90, 1, 100);
-			LEDs.brightness(led_ldr);
-
-			// Tick display if BLE is not connected
-			if (BLE.isConnected() == SBLE_NOK) Display.tick();
+			// Log TnH stuff
+			#ifdef DEBUG_WAKEUP
+			logTnH();		
+			#endif // DEBUG_WAKEUP	
 
 			// Toggle clock :
 			ledSmToggle();
@@ -268,42 +281,26 @@ int main(void)
 			sClock.enableWakeup(SYS_WAKEUP_CLOCK, SYS_WAKEUP);					
 		}
 
-		// SOON: Replace BLE RX with DMA
-		// If BLE is connected
-		if (BLE.isConnected())
-		{
-			// Clear override error if needed
-			if (BLE_UART->ISR & USART_ISR_ORE)
-			{
-				BLE_UART->ICR |= USART_ICR_ORECF;
-				(void)BLE_UART->RDR;
-			}
-
-			// If new byte is received
-			if (BLE_UART->ISR & USART_ISR_RXNE)
-			{
-				// Store received char
-				char tmp = BLE_UART->RDR;
-
-				// If string end is received
-				if (tmp == '\r')
-				{
-					// Replace \r or \n with \0 char
-					BLEInput.write('\0');
-
-					// Pass whole string to command handler
-
-					// SOON: Echo test
-					char tmpBuff[BLE_RX_BUFFER];
-					BLEInput.read(tmpBuff, BLEInput.used());
-					BLE.printf("echo: %s\n", tmpBuff);
-				}
-				else if (tmp != '\n') BLEInput.write(tmp);
-			}
-		}
-
 		// Update LED display
 		ledUpdate();
+
+		// Get character over UART if BLE has connection
+		if (BLE.isConnected()) bleGetChar();
+		else // BLE has no connection
+		{
+			// If LED line is in idle state
+			if (LEDs.status() == ProgLED_state_t::IDLE)
+			{
+				//log("DMX!\n\n");
+
+				// Feed the dog!
+				#ifndef DEBUG
+				Dog.feed();
+				#endif // DEBUG
+
+				// SOON: Put MCU into sleep mode
+			}
+		}
 
 		// Feed the dog!
 		#ifndef DEBUG
