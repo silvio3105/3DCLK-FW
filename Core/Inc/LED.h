@@ -125,7 +125,7 @@ class LedDisplay {
 
 // ----- EXTERNS
 extern ProgLED<LEDS, LED_FORMAT> LEDs;
-extern LedDisplay<LED_INFO_MAX> Display;
+extern LedDisplay<LED_INFO_TOTAL> Display;
 
 
 // ----- FUNCTION DECLARATIONS
@@ -175,6 +175,20 @@ void ledSmOn(void);
  * @return No return value.
  */
 void ledUpdate(void);
+
+/**
+ * @brief Show right aligned RST text.
+ * 
+ * @return No return value.
+ */
+void ledShowRST(void);
+
+/**
+ * @brief Show right aligned BLE text.
+ * 
+ * @return No return value.
+ */
+void ledShowBLE(void);
 
 #endif // _LED_H_
 

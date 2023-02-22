@@ -142,7 +142,7 @@ const uint8_t ledCharIdx[5] = {
 	LED_IDX_4
 };
 
-ledDisplayInfo ledInfo[LED_INFO_MAX] = {
+ledDisplayInfo ledInfo[LED_INFO_TOTAL] = {
 	{ ledDisplayTime, CYCLE_TICK_TIME },
 	{ ledDisplayDay, CYCLE_TICK_DAY },
 	{ ledDisplayDate, CYCLE_TICK_DATE },
@@ -163,7 +163,7 @@ uint8_t ledUpdateFlag = 0; /**< @brief LED update flag. If set, LEDs will be upd
  * \c ledPWMStop external function for stopping LED line update.
  */
 ProgLED<LEDS, LED_FORMAT> LEDs = ProgLED<LEDS, LED_FORMAT>(ledPWMStart, ledPWMStop);
-LedDisplay<LED_INFO_MAX> Display = LedDisplay<LED_INFO_MAX>(ledInfo);
+LedDisplay<LED_INFO_TOTAL> Display = LedDisplay<LED_INFO_TOTAL>(ledInfo);
 
 
 // ----- FUNCTION DEFINITIONS
@@ -171,7 +171,9 @@ static void ledPWMStart(int8_t bit)
 {
 	static uint8_t ledBits[LEDS * LED_BITS];
 
+	#ifdef DEBUG_LED
 	log("LED DMA PWM Started\n");
+	#endif // DEBUG_LED
 
 	// Fill buffer for DMA
 	LEDs.fillBuffer(ledBits, sizeof(ledBits), LEDS, LED_L_VAL, LED_H_VAL);
@@ -217,7 +219,9 @@ static void ledPWMStart(int8_t bit)
 
 static void ledPWMStop(int8_t bit)
 {
+	#ifdef DEBUG_LED
 	log("LED DMA PWM Stopped\n");
+	#endif // DEBUG_LED
 }
 
 void ledInit(void)
@@ -274,6 +278,7 @@ void ledPrint(const char* str)
 
 	// Loop through input four characters
 	#ifdef DEBUG
+	// Use only first LED panel
 	for (uint8_t i = 0; i < 1; i++)
 	#else
 	// Use all four LED panels
@@ -348,6 +353,27 @@ void displayPercent(void)
 	displayBitmap(led_panel_t::LED_PANEL4, ledPercentBitmap);
 }
 
+void ledShowRST(void)
+{
+	// Set ERROR color and brightness
+	LEDs.rgb(LED_COLOR_ERROR); // SOON: Replace with custom config
+	LEDs.brightness(LED_BRGHT_ERROR); // SOON: Replace with custom config
+
+	// Print RST text
+	ledPrint("-RST"); // SOON: Remove "-" before RST	
+}
+
+void ledShowBLE(void)
+{
+	// Set BLE connection color and brightness
+	LEDs.rgb(LED_COLOR_BLE_CONN); // SOON: Replace with custom config
+	LEDs.brightness(LED_BRGHT_BLE_CONN); // SOON: Replace with custom config
+
+	// Print BLE text
+	ledPrint("-BLE"); // SOON: Remove "-" before BLE	
+}
+
+
 // ----- STATIC FUNCTION DEFINITIONS
 static uint8_t getCharBitmap(const char c)
 {
@@ -381,7 +407,10 @@ static void ledDisplayTime(void)
 	LEDs.rgb(LED_COLOR_TIME);
 	snprintf(str, sizeof(str), "%02d%02d", clockGetHour(), clockGetMinute());
 	ledPrint(str);
+
+	#ifdef DEBUG_LED
 	logf("Display[time] -> \"%s\"\n", str);
+	#endif // DEBUG_LED
 }
 
 static void ledDisplayDay(void)
@@ -390,7 +419,10 @@ static void ledDisplayDay(void)
 	LEDs.rgb(LED_COLOR_DAY);
 	snprintf(str, sizeof(str), "DAY%d", clockGetWeekDay());
 	ledPrint(str);
+
+	#ifdef DEBUG_LED
 	logf("Display[day] -> \"%s\"\n", str);
+	#endif // DEBUG_LED
 }
 
 static void ledDisplayDate(void)
@@ -399,7 +431,10 @@ static void ledDisplayDate(void)
 	LEDs.rgb(LED_COLOR_DATE);
 	snprintf(str, sizeof(str), "%02d%02d", clockGetDay(), clockGetMonth());
 	ledPrint(str);
-	logf("Display[date] -> \"%s\"\n", str);	
+
+	#ifdef DEBUG_LED
+	logf("Display[date] -> \"%s\"\n", str);
+	#endif // DEBUG_LED
 }
 
 static void ledDisplayTemp(void)
@@ -415,7 +450,10 @@ static void ledDisplayTemp(void)
 	snprintf(str, sizeof(str), "%02d C", temp);
 	ledPrint(str);
 	displayBitmap(led_panel_t::LED_PANEL3, ledPercentBitmap);
-	logf("Display[temp] -> \"%02d°C\"\n", temp);	
+
+	#ifdef DEBUG_LED
+	logf("Display[temp] -> \"%02d°C\"\n", temp);
+	#endif // DEBUG_LED
 }
 
 static void ledDsiplayRH(void)
@@ -430,7 +468,10 @@ static void ledDsiplayRH(void)
 	snprintf(str, sizeof(str), "%02d", rh);
 	ledPrint(str);
 	displayPercent();
-	logf("Display[rh] -> \"%02d%%\"\n", rh);		
+
+	#ifdef DEBUG_LED
+	logf("Display[rh] -> \"%02d%%\"\n", rh);
+	#endif // DEBUG_LED		
 }
 
 
