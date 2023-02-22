@@ -37,7 +37,6 @@ This License shall be included in all methodal textual files.
 // ----- EXTERNS
 extern sBLE_HM BLE;
 extern volatile uint8_t bleConnAltered;
-extern sStd::RingBuffer<char, BLE_RX_BUFFER> BLEInput;
 
 
 // ----- FUNCTION DECLARATIONS
@@ -70,6 +69,13 @@ void blePrintTnH(void);
  * @return No return value.
  */
 void blePrintRTC(void);
+
+/**
+ * @brief Get character over UART from BLE module.
+ * 
+ * @return No return value.
+ */
+void bleGetChar(void);
 
 
 

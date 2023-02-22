@@ -31,6 +31,7 @@ This License shall be included in all methodal textual files.
 #include			"Log.h"
 #include			"sStd.h"
 #include			"TnH.h"
+#include			"CMD.h"
 
 
 // ----- STATIC FUNCTION DECLARATIONS
@@ -74,6 +75,10 @@ void bleInit(void)
 		output[6] = '\0';
 		BLE.getPIN(output);
 		logf("BLE PIN: %s\n", output);
+
+		output[11] = '\0';
+		BLE.getVersion(output);
+		logf("BLE Version: %s\n", output);
 	}
 	else log("BLE init NOT OK!\n");
 }
@@ -108,6 +113,39 @@ void blePrintTnH(void)
 	if (ret == SHT40_OK || ret == SHT40_OLD_DATA) BLE.printf("Temperature: %d°C\n", tnh); // SOON: Adjust for °F	
 }
 
+void bleGetChar(void)
+{
+	// Clear override error if needed
+	if (BLE_UART->ISR & USART_ISR_ORE)
+	{
+		BLE_UART->ICR |= USART_ICR_ORECF;
+		(void)BLE_UART->RDR;
+	}
+
+	// If new byte is received
+	if (BLE_UART->ISR & USART_ISR_RXNE)
+	{
+		// Store received char
+		char tmpChar = BLE_UART->RDR;
+
+		// If string end is received
+		if (tmpChar == '\r')
+		{
+			// Replace \r or \n with \0 char
+			BLEInput.write('\0');
+
+			// Pass whole string to command handler
+
+			// SOON: Echo test
+			char tmpBuff[BLE_RX_BUFFER];
+			BLEInput.read(tmpBuff, BLEInput.used());
+			logf("echo: '%s'\n", tmpBuff);
+			CMDLine.exe(tmpBuff);
+		}
+		else if (tmpChar != '\n') BLEInput.write(tmpChar);
+	}	
+}
+
 
 // ----- STATIC FUNCTION DEFINITIONS
 static void bleTX(const char* str, uint8_t len)
@@ -126,13 +164,15 @@ static void bleRX(char* str, uint8_t len, const char stopChar)
 {
 	uint8_t idx = 0;
 
-	// Clear override error
-	BLE_UART->ICR |= USART_ICR_ORECF;
+	
 	(void)BLE_UART->RDR;
 
 	// While not all bytes are received
 	do
 	{
+		// Clear override error
+		BLE_UART->ICR |= USART_ICR_ORECF;
+
 		// If new byte is received
 		if (BLE_UART->ISR & USART_ISR_RXNE)
 		{
