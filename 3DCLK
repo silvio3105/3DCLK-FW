@@ -103,7 +103,8 @@ Core/Src/sEEPROM.cpp \
 Core/Src/Storage.cpp \
 Core/Src/sBLE.cpp \
 Core/Src/BLE.cpp \
-Core/Src/Pwr.cpp
+Core/Src/Pwr.cpp \
+Core/Src/CMD.cpp
 
 
 ######################################
