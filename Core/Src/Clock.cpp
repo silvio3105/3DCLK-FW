@@ -58,20 +58,8 @@ sRTC sClock(RTC);
 // ----- FUNCTION DEFINITIONS
 void clockInit(void)
 {
-	// SOON: Testing
-	sRTC_time_t time = {
-		sRTC_day_t::THURSDAY,
-		11,
-		9,
-		18,
-
-		11,
-		59,
-		50,
-	};	
-
 	// Configure RTC
-	sClock.init(CFG_TIME_FORMAT, &time);
+	sClock.init(CFG_TIME_FORMAT);
 
 	// Check if RTC time is set
 	if (!sClock.isSet()) log("Clock lost\n");		
