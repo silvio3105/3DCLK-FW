@@ -134,13 +134,12 @@ void bleGetChar(void)
 			// Replace \r or \n with \0 char
 			BLEInput.write('\0');
 
-			// Pass whole string to command handler
-
-			// SOON: Echo test
 			char tmpBuff[BLE_RX_BUFFER];
 			BLEInput.read(tmpBuff, BLEInput.used());
-			logf("echo: '%s'\n", tmpBuff);
-			CMDLine.exe(tmpBuff);
+
+			// If first two chars are not "OK", execute commands - this prevents to execute module messages(eg., "OK+LOST" on disconnect)
+			if (!(tmpBuff[0] == 'O' && tmpBuff[1] == 'K')) CMDLine.exe(tmpBuff);
+				else logf("BLE: '%s'\n", tmpBuff);
 		}
 		else if (tmpChar != '\n') BLEInput.write(tmpChar);
 	}	
