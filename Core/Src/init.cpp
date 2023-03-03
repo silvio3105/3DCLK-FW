@@ -64,7 +64,7 @@ void SystemClock_Config(void)
 		LL_RCC_ForceBackupDomainReset();
 		LL_RCC_ReleaseBackupDomainReset();
 	}
-	LL_RCC_LSE_SetDriveCapability(LL_RCC_LSEDRIVE_LOW);
+	LL_RCC_LSE_SetDriveCapability(LSE_DRIVE);
 	LL_RCC_LSE_Enable();
 
 	/* Wait till LSE is ready */
