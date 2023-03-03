@@ -59,14 +59,22 @@ struct ledChar {
 	const uint8_t bitmap = 0b00000000; /**< @brief Bitmap of \ref ch character(LSB->MSB). */
 } __attribute__((packed, aligned(2)));
 
-
+/**
+ * @brief Struct for list of info to display.
+ * 
+ */
 struct ledDisplayInfo {
-	void (*infoHandler)(void);
-	uint8_t durationTicks;
+	void (*infoHandler)(void); /**< @brief Pointer to info display function. */
+	uint8_t durationTicks; /**< @brief Number of ticks info will be displayed. */
 };
 
 
 // ----- CLASSES
+/**
+ * @brief LED display class.
+ * 
+ * @tparam max Maximum number of info display can handle.
+ */
 template<uint8_t max>
 class LedDisplay {
 	// PUBLIC STUFF
@@ -116,10 +124,10 @@ class LedDisplay {
 	// PRIVATE STUFF
 	private:
 	// VARIABLES
-	ledDisplayInfo* list = nullptr;
-	uint8_t maxInfo = max;
-	uint8_t currentInfo = 0;
-	uint8_t tickCounter = 0;
+	ledDisplayInfo* list = nullptr; /**< @brief Pointer to list of info to display. */
+	uint8_t maxInfo = max; /**< @brief Length of \ref list */
+	uint8_t currentInfo = 0; /**< @brief Index of current displayed info. */
+	uint8_t tickCounter = 0; /**<@brief Tick counter. */
 };
 
 

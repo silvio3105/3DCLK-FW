@@ -83,7 +83,7 @@ static void ledDsiplayRH(void);
  * 
  * LED segment and panel connections are described in "LED Segment & Panel.dwg" in project documentation.
  * 
- * @warning All letter are upper-case.
+ * @warning All letter must be upper-case.
  */
 const ledChar charBitmap[] = {
 	// NUMBERS
@@ -163,6 +163,13 @@ uint8_t ledUpdateFlag = 0; /**< @brief LED update flag. If set, LEDs will be upd
  * \c ledPWMStop external function for stopping LED line update.
  */
 ProgLED<LEDS, LED_FORMAT> LEDs = ProgLED<LEDS, LED_FORMAT>(ledPWMStart, ledPWMStop);
+
+/**
+ * @brief LED display object.
+ * 
+ * \c LED_INFO_TOTAL Number of info display will cycle.
+ * \c ledInfo Pointer to list of info display will cycle.
+ */
 LedDisplay<LED_INFO_TOTAL> Display = LedDisplay<LED_INFO_TOTAL>(ledInfo);
 
 
@@ -441,7 +448,7 @@ static void ledDisplayTemp(void)
 {
 	char str[7]; // 5 bytes needed. 7 bytes placed to get rid of -Wformat-truncation
 	int8_t temp = 0;
-	uint8_t ledPercentBitmap = LED_S3 | LED_S4 | LED_S5 | LED_S6;
+	uint8_t ledDegBitmap = LED_S3 | LED_S4 | LED_S5 | LED_S6;
 
 	TnH.temperature(temp);
 	temp = sStd::limit<int8_t>(temp, 0, 99);
@@ -449,7 +456,7 @@ static void ledDisplayTemp(void)
 	LEDs.rgb(LED_COLOR_TEMP);
 	snprintf(str, sizeof(str), "%02d C", temp);
 	ledPrint(str);
-	displayBitmap(led_panel_t::LED_PANEL3, ledPercentBitmap);
+	displayBitmap(led_panel_t::LED_PANEL3, ledDegBitmap);
 
 	#ifdef DEBUG_LED
 	logf("Display[temp] -> \"%02d°C\"\n", temp);
@@ -462,7 +469,7 @@ static void ledDsiplayRH(void)
 	uint8_t rh = 0;
 
 	TnH.rh(rh);
-	if (rh > 99) rh = 99;
+	rh = sStd::limit<uint8_t>(rh, 0, 99);
 
 	LEDs.rgb(LED_COLOR_RH);
 	snprintf(str, sizeof(str), "%02d", rh);
