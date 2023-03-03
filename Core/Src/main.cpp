@@ -61,7 +61,7 @@ static void getResetReason(void);
  * Offset is \c 0xC0
  */
 const Build buildInfo __attribute__((section(".buildData"))) = {
-	""FW_NAME" "FW_VER"", /**< @brief Build version. */
+	"" FW_NAME " " FW_VER "", /**< @brief Build version. */
 	HW_VER, /**< @brief Hardware version. */
 	__DATE__ /**< @brief Build date. */
 };
@@ -231,9 +231,8 @@ int main(void)
 		// If wake up flag is set
 		if (wakeup)
 		{
-			#ifdef DEBUG_WAKEUP
-			log("RTC Wakeup\n");
-			#endif // DEBUG_WAKEUP
+			// Start RTC wakeup timer
+			sClock.enableWakeup(SYS_WAKEUP_CLOCK, SYS_WAKEUP);	// For some reason, RTC drifts when this function is placed at bottom of wakeup flag check			
 
 			// Reset wakeup flag
 			wakeup = 0;
@@ -275,10 +274,7 @@ int main(void)
 			#endif // DEBUG_WAKEUP	
 
 			// Toggle clock :
-			ledSmToggle();
-
-			// Start RTC wakeup timer
-			sClock.enableWakeup(SYS_WAKEUP_CLOCK, SYS_WAKEUP);					
+			ledSmToggle();	
 		}
 
 		// Update LED display
