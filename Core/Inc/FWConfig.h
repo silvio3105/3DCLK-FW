@@ -111,7 +111,7 @@ This License shall be included in all methodal textual files.
 // DEBUG STUFF
 #ifdef DEBUG
 #define LOG_BUFF					128 /**< @brief Buffer size in bytes for logger. */
-//#define DEBUG_WAKEUP				/**< @brief Enable debug prints on RTC wakeup. */
+#define DEBUG_WAKEUP				/**< @brief Enable debug prints on RTC wakeup. */
 //#define DEBUG_LED					/**< @brief Enable debug prints for LED display. */
 #endif // DEBUG
 

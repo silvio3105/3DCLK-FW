@@ -122,6 +122,11 @@ This License shall be included in all methodal textual files.
 #define LDR_ADC						ADC1 /**< @brief ADC for measuring light with LDR. */
 #endif // STM32L051K8
 
+// LSE
+#ifdef STM32L051K8
+#define LSE_DRIVE					LL_RCC_LSEDRIVE_LOW /**< @brief LSE drive strength. */
+#endif // STM32L051K8
+
 // TEMPERATURE & HUMIDITY SENSOR
 #ifdef SHT40_AD
 #define TNH_SENS_ADDR				0x44 /**< @brief I2C address for SHT40-AD temperature sensor. */
