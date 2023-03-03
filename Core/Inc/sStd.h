@@ -614,13 +614,83 @@ namespace sStd
 	};
 
 	// STRUCTS
+	/**
+	 * @brief Struct for input info for \ref sscan function.
+	 * 
+	 */
 	struct scanData {
 		char sepEnd; /**< End separator after wanted parameter. */
 		uint8_t sepCntEnd; /**< Number of \c sepEdn after wanted parameter is found. */
 		char sepBegin; /**< Begin separator before wanted parameter. */
 		uint8_t sepCntBegin; /**< Number of \c sepBegin before wanted parameter. */		
 		sStd::Data<char> output; /**< \c char type output data. */
-	};	
+	};
+
+
+	// MISC FUNCTIONS
+	/**
+	 * @brief Check if character is number.
+	 * 
+	 * @param ch Input character.
+	 * @return \c SSTD_NOK if \c ch is not number.
+	 * @return \c SSTD_OK if \c ch is number.
+	 */
+	uint8_t isNum(const char ch);
+
+	/**
+	 * @brief Convert character to number.
+	 * 
+	 * @param ch Input character.
+	 * @return Character converted to number.
+	 * 
+	 * @warning Function does not checks if input character is number. Use \ref isNum function to check if character is number.
+	 */
+	inline uint8_t char2Num(const char ch)
+	{
+		return (ch - '0');
+	}
+
+	/**
+	 * @brief Validate input value for minutes
+	 * 
+	 * @param in Input value.
+	 * @return \c SSTD_NOK if value \c in is not minutes.
+	 * @return \c SSTD_OK if value \c in is minutes.
+	 */
+	uint8_t isMin(uint8_t in);
+
+	/**
+	 * @brief Validate input value for seconds.
+	 * 
+	 * @param in Input value.
+	 * @return \c SSTD_NOK if value \c in is not seconds.
+	 * @return \c SSTD_OK if value \c in is seconds.
+	 */
+	inline uint8_t isSecond(uint8_t in)
+	{
+		return sStd::isMin(in);
+	}
+
+	/**
+	 * @brief Validate input value for hours.
+	 * 
+	 * @param in Input value.
+	 * @param format Hour format. \c 0 is 24 hour format. \c 1 is 12 hour format.
+	 * @return \c SSTD_NOK if input value \c in is not not hours.
+	 * @return \c SSTD_OK if input value \c in is hours.
+	 */
+	uint8_t isHour(uint8_t in, uint8_t format = 0);
+
+	/**
+	 * @brief Validate input date.
+	 * 
+	 * @param day Input day.
+	 * @param month Input month.
+	 * @param year Input year.
+	 * @return \c SSTD_NOK if date is not valid.
+	 * @return \c SSTD_OK if date if valid.
+	 */
+	uint8_t validateDate(uint8_t day, uint8_t month, uint16_t year);
 
 
 	// MATH FUNCTIONS
@@ -782,6 +852,42 @@ namespace sStd
 	 * @return Value \c num in decimal.
 	 */
 	uint8_t BCD2dec(uint8_t num);
+
+	/**
+	 * @brief Convert C-string to decimal value.
+	 * 
+	 * @tparam T Decimal type, eg., \c uint8_t
+	 * @param str Pointer to C-string.
+	 * @param endChar End character of \c str string.
+	 * @return C-string number converted to decimal.
+	 */
+	template<typename T>
+	T str2Dec(const char* str, const char endChar = '\0')
+	{
+		T value = 0;
+		uint8_t idx = 0;
+
+		// Move to next char if first char is minus
+		if (str[0] == '-') idx++;
+
+		// While char is number and not equal to end char
+		while (str[idx] != endChar && sStd::isNum(str[idx]) == SSTD_OK)
+		{
+			// Add one digit to output value
+			value *= 10;
+
+			// Add converted char to output value 
+			value += sStd::char2Num(str[idx]);
+
+			// Move index
+			idx++;
+		}
+
+		// If first char is minus, convert output value to negative
+		if (str[0] == '-') value *= (-1);
+
+		return value;
+	}
 
 	// STRING MANIPULATION FUNCTIONS DECLARATIONS
 	/**
