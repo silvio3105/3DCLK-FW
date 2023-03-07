@@ -62,18 +62,27 @@ void SysTick_Handler(void)
 	tick++;
 }
 
-
-
 void RTC_IRQHandler(void)
 {
 	// Use check below to make sure interrupt was RTC wake up
 	// if (RTC->ISR & RTC_ISR_WUTF)
 
+	#ifdef RTC_CLK_OUT
+	// Toggle RTC_CLK
+	RTC_CLK_GPIO_Port->ODR |= RTC_CLK_GPIO_Pin;
+	sClock.wakeupStart(SYS_WAKEUP);
+	delay(0);
+	RTC_CLK_GPIO_Port->BRR |= RTC_CLK_GPIO_Pin;
+	
+	#endif // RTC_CLK_OUT
+
 	// Clear EXTI line pending interrupt flag
 	EXTI->PR |= EXTI_IMR_IM20;
 
 	// Set RTC wakeup flag
+	#ifndef RTC_CLK_OUT
 	wakeup = 1;
+	#endif // RTC_CLK_OUT
 }
 
 
