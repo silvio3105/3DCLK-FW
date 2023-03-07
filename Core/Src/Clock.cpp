@@ -52,7 +52,7 @@ const char clockAMPM[2][3] = {
 
 
 // ----- OBJECTS
-sRTC sClock(RTC);
+sRTC sClock(RTC_HANDLE);
 
 
 // ----- FUNCTION DEFINITIONS
@@ -60,6 +60,13 @@ void clockInit(void)
 {
 	// Configure RTC
 	sClock.init(CFG_TIME_FORMAT);
+
+	// Calibrate RTC
+	#ifdef RTC_CALIBRATE
+	sClock.calibrate(RTC_CAL_DIR, RTC_CAL_VALUE);
+	#else
+	sClock.calibrate(sRTC_cal_dir_t::RTC_CAL_NEGATIVE, 0); // Reset calibration
+	#endif // RTC_CALIBRATE
 
 	// Check if RTC time is set
 	if (!sClock.isSet()) log("Clock lost\n");		
