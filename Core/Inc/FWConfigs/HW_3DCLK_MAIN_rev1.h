@@ -30,7 +30,7 @@ This License shall be included in all methodal textual files.
 
 
 /** \defgroup HW_3DCLK_MAIN_rev1
- * Configuration for HW_3DCLK_MAIN_rev1.
+ * Configuration for HW_3DCLK_MAIN_rev1 hardware.
  * @{
  */
 
@@ -86,6 +86,9 @@ This License shall be included in all methodal textual files.
 
 #define BLE_RST_Pin					LL_GPIO_PIN_3 /**< @brief GPIO pin for BLE RST. */
 #define BLE_RST_GPIO_Port			GPIOB /**< @brief GPIO port for BLE RST. */
+
+#define RTC_CLK_GPIO_Pin			LL_GPIO_PIN_15 /**< @brief GPIO pin used for RTC clock output when enabled with \ref RTC_CLK_OUT */
+#define RTC_CLK_GPIO_Port			GPIOA /**< @brief GPIO port used for RTC clock output when enabled with \ref RTC_CLK_OUT */
 #endif // STM32L051K8
 
 // WATCHDOG
@@ -122,9 +125,29 @@ This License shall be included in all methodal textual files.
 #define LDR_ADC						ADC1 /**< @brief ADC for measuring light with LDR. */
 #endif // STM32L051K8
 
-// LSE
+// LSE & RTC
 #ifdef STM32L051K8
-#define LSE_DRIVE					LL_RCC_LSEDRIVE_LOW /**< @brief LSE drive strength. */
+#define RTC_HANDLE					RTC /**< @brief Handle for RTC. */
+#define RTC_CALIBRATE				/**< @brief Calibrate RTC with \ref RTC_CAL_DIR and \ref RTC_CAL_VALUE values. */
+#define LSE_DRIVE					LL_RCC_LSEDRIVE_LOW /**< @brief LSE drive strength (RTC clock). */
+
+/**
+ * @brief Calibration direction.
+ * 
+ * When set to \c sRTC_cal_dir_t::RTC_CAL_POSITIVE RTC is calibrated with +488.5ppm.
+ * 
+ */
+#define RTC_CAL_DIR					sRTC_cal_dir_t::RTC_CAL_NEGATIVE
+
+/**
+ * @brief Calibration value.
+ * 
+ * Calibration ppm is calculated using formula: \c (CALP*512-CALM)/(2^20-CALP*512+CALM)*10^6 where \c CALP is \c 0 or \c 1 and \c CALM is value between \c 0 and \c 511
+ * \c CALP is selected with \ref RTC_CAL_DIR and \c CALM is selected with \ref RTC_CAL_VALUE macro.
+ * Resolution of \c CALM is 0.954ppm. 
+ * 
+ */
+#define RTC_CAL_VALUE				115
 #endif // STM32L051K8
 
 // TEMPERATURE & HUMIDITY SENSOR
