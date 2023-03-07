@@ -110,9 +110,12 @@ This License shall be included in all methodal textual files.
 
 // DEBUG STUFF
 #ifdef DEBUG
+#define LOG_METHOD					0 /**< @brief Logging method. \c 0 = \ref SYS_UART ; \c 1 = RTT on channel \ref LOG_RTT_CH */
 #define LOG_BUFF					128 /**< @brief Buffer size in bytes for logger. */
+#define LOG_RTT_CH					0 /**< @brief RTT channel. */
 #define DEBUG_WAKEUP				/**< @brief Enable debug prints on RTC wakeup. */
 //#define DEBUG_LED					/**< @brief Enable debug prints for LED display. */
+#define RTC_CLK_OUT					/**< @brief Simulate \c ck_spre clock output. Set to \c 1 to enable \c ck_spre clock output. */
 #endif // DEBUG
 
 
