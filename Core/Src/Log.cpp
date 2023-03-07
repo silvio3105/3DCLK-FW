@@ -32,36 +32,71 @@ This License shall be included in all methodal textual files.
 
 
 #ifdef DEBUG
+#if LOG_METHOD == 0 // Sys UART
 // ----- FUNCTION DECLARATIONS
 /**
- * @brief Handler for transmitting characters over UART.
+ * @brief Handler for transmitting characters over RTT.
  * 
  * @param buffer Pointer to C-string to transmit.
  * @param len Length of \c buffer
  * @return No return value.
  */
-static void UART2Out(const char* buffer, const uint16_t len);
+static void uartTX(const char* buffer, const uint16_t len);
+
+#elif LOG_METHOD == 1 // Sys RTT
+
+/**
+ * @brief Handler for printing over RTT.
+ * 
+ * @param buffer Pointer to C-string to print.
+ * @param len Length of \c buffer
+ * @return No return value.
+ */
+static void rttTX(const char* buffer, const uint16_t len);
+#endif // LOG_METHOD
 
 
 // ----- OBJECTS
+#if LOG_METHOD == 0 // If Sys UART is used
 /**
  * @brief Logger object.
  * 
  * \c LOG_BUFF Buffer size.
- * \c UART2Out Function for handling UART2 transmits.
+ * \c uartTX Function for handling \ref SYS_UART transmits.
  */
-sStd::Logger<LOG_BUFF> Serial = sStd::Logger<LOG_BUFF>(UART2Out);
+sStd::Logger<LOG_BUFF> Serial(uartTX);
+#elif LOG_METHOD == 1 // If Sys RTT is used
+/**
+ * @brief Logger object.
+ * 
+ * \c LOG_BUFF Buffer size.
+ * \c rttTX Function for handling RTT prints.
+ */
+sStd::Logger<LOG_BUFF> Serial(rttTX);
+
+/**
+ * @brief RTT object.
+ * 
+ * \c LOG_BUFF size of RTT's buffer for printf method.
+ * \c LOG_RTT_CH RTT channel.
+ */
+sRTT<LOG_BUFF> SysRTT(LOG_RTT_CH);
+
+#endif // LOG_METHOD
+
 #endif // DEBUG
 
 
 // ----- FUNCTION DEFINITIONS
 void logRTC(void)
 {
+	#ifdef DEBUG
 	// Abort if RTC is not set
 	if (!sClock.isSet()) return;
 
 	// SOON: Adjust for 24/AM-PM time format
 	logf("Date: %s %02d. %02d. %d.\nTime: %02d:%02d:%02d %s\n", clockDays[clockGetWeekDay() - 1], clockGetDay(), clockGetMonth(), clockGetYear(), clockGetHour(), clockGetMinute(), clockGetSecond(), clockAMPM[clockGetAMPM()]);
+	#endif // DEBUG
 }
 
 void logTnH(void)
@@ -82,7 +117,8 @@ void logTnH(void)
 
 // ----- STATIC FUNCTION DEFINITIONS
 #ifdef DEBUG
-static void UART2Out(const char* buffer, const uint16_t len)
+#if LOG_METHOD == 0
+static void uartTX(const char* buffer, const uint16_t len)
 {
 	for (uint16_t i = 0; i < len; i++)
 	{
@@ -93,6 +129,16 @@ static void UART2Out(const char* buffer, const uint16_t len)
 		SYS_UART->TDR = buffer[i];
 	}
 }
+
+#elif LOG_METHOD == 1
+
+static void rttTX(const char* buffer, const uint16_t len)
+{
+	// Print over RTT
+	SysRTT.print(buffer, len);
+}
+#endif // LOG_METHOD
+
 #endif // DEBUG
 
 

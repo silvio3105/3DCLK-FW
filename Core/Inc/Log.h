@@ -32,6 +32,7 @@ This License shall be included in all methodal textual files.
 #include			"main.h"
 #include			"sStd.h"
 #include			"Clock.h"
+#include			"sRTT.h"
 
 
 // ----- MACROS
