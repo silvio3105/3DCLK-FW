@@ -84,6 +84,7 @@ endif
 ######################################
 # C UNITS
 C_SOURCES = \
+Core/Src/SEGGER_RTT.c
 
 
 # C++ UNITS
