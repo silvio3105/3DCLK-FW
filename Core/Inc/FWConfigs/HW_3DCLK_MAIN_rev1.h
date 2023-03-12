@@ -148,6 +148,7 @@ This License shall be included in all methodal textual files.
  * 
  */
 #define RTC_CAL_VALUE				115
+#define RTC_CAL_CYCLE				sRTC_cal_cycle_t::RTC_CAL_32S /**< @brief RTC calibration cycle period. */
 #endif // STM32L051K8
 
 // TEMPERATURE & HUMIDITY SENSOR
