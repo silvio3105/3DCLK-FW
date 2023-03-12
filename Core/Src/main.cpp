@@ -164,9 +164,7 @@ int main(void)
 
 	// Check if RTC is set
 	if (!sClock.isSet())
-	{
-		log("RTC not set\n");
-		
+	{	
 		// Display right aligned RST text
 		ledShowRST();
 	}
@@ -177,7 +175,10 @@ int main(void)
 	// Feed the dog!
 	#ifndef DEBUG
 	Dog.feed();
-	#endif // DEBUG	
+	#endif // DEBUG
+
+	// Enable RTC wake up
+	sClock.wakeupEnable(SYS_WAKEUP_CLOCK);
 
 	// Lets roll!
 	while (1)
@@ -232,7 +233,7 @@ int main(void)
 		if (wakeup)
 		{
 			// Start RTC wakeup timer
-			sClock.enableWakeup(SYS_WAKEUP_CLOCK, SYS_WAKEUP);	// For some reason, RTC drifts when this function is placed at bottom of wakeup flag check			
+			sClock.wakeupStart(SYS_WAKEUP);	// For some reason, RTC drifts when this function is placed at bottom of wakeup flag check			
 
 			// Reset wakeup flag
 			wakeup = 0;
