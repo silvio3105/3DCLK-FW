@@ -115,7 +115,7 @@ This License shall be included in all methodal textual files.
 #define LOG_RTT_CH					0 /**< @brief RTT channel. */
 #define DEBUG_WAKEUP				/**< @brief Enable debug prints on RTC wakeup. */
 //#define DEBUG_LED					/**< @brief Enable debug prints for LED display. */
-#define RTC_CLK_OUT					/**< @brief Simulate \c ck_spre clock output. Set to \c 1 to enable \c ck_spre clock output. */
+//#define RTC_CLK_OUT					/**< @brief Simulate \c ck_spre clock output. Set to \c 1 to enable \c ck_spre clock output. */
 #endif // DEBUG
 
 
