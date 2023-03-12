@@ -63,9 +63,9 @@ void clockInit(void)
 
 	// Calibrate RTC
 	#ifdef RTC_CALIBRATE
-	sClock.calibrate(RTC_CAL_DIR, RTC_CAL_VALUE);
+	sClock.calibrate(RTC_CAL_DIR, RTC_CAL_VALUE, RTC_CAL_CYCLE);
 	#else
-	sClock.calibrate(sRTC_cal_dir_t::RTC_CAL_NEGATIVE, 0); // Reset calibration
+	sClock.calibrate(sRTC_cal_dir_t::RTC_CAL_NEGATIVE, 0, RTC_CAL_CYCLE); // Reset calibration
 	#endif // RTC_CALIBRATE
 
 	// Check if RTC time is set
