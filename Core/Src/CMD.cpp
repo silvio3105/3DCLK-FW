@@ -245,6 +245,12 @@ SCMD_HANDLER(set)
 	// SOON: Before reinit check time format in config
 	sClock.init(timeFormat);
 
+	// Init RTC wakeup timer
+	sClock.wakeupEnable(SYS_WAKEUP_CLOCK);
+
+	// Start RTC wakeup timer
+	sClock.wakeupStart(SYS_WAKEUP);
+
 	// Set RTC time and date
 	if (timeFormat == sRTC_time_format_t::AM_PM) sClock.set(day, month, year, (sRTC_day_t)dayIdx, hour, minute, second);
 		else sClock.set(day, month, year, (sRTC_day_t)dayIdx, hour, minute, second, ampmTag);
@@ -253,9 +259,6 @@ SCMD_HANDLER(set)
 	BLE.printf("RTC set to: %s format, %02d:%02d:%02d", args[0], hour, minute, second);
 	if (timeFormat == sRTC_time_format_t::AM_PM) BLE.printf(" %s", args[4]);
 	BLE.print("\n", 1);
-
-	// Start RTC wakeup timer
-	sClock.enableWakeup(SYS_WAKEUP_CLOCK, SYS_WAKEUP);	
 }
 
 
