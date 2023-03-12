@@ -2,3 +2,5 @@
 .releases
 main.c
 Makefile
+*.jlink
+*.cortex-*.json

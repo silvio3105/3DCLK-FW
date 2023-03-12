@@ -1,7 +1,7 @@
 /**
- * @file Log.h
+ * @file Storage.h
  * @author silvio3105 (www.github.com/silvio3105)
- * @brief Header file for log module.
+ * @brief Storage header file.
  * 
  * @copyright Copyright (c) 2023, silvio3105
  * 
@@ -25,53 +25,44 @@ This License shall be included in all methodal textual files.
 */
 
 
-#ifndef _LOG_H_
-#define _LOG_H_
+#ifndef _STORAGE_H_
+#define _STORAGE_H_
+
+/** \addtogroup Storage
+ * @{
+ * Storage module for various data.
+*/
 
 // ----- INCLUDE FILES
-#include			"main.h"
-#include			"sStd.h"
-#include			"Clock.h"
-#include			"sRTT.h"
+#include			"sEEPROM.h"
+#include			"FWConfig.h"
 
 
-// ----- MACROS
-// Remove Logger functions if DEBUG is not defined
-#ifdef DEBUG
-#define log(...) \
-	Serial.print(__VA_ARGS__)
-
-#define logf(...) \
-	Serial.printf(__VA_ARGS__)
-#else
-#define log(...) 	
-#define logf(...) 
-#endif // DEBUG
+// ----- DEFINES
+// EEPROM SECTORS
+#define EEPROM_CONFIG_START					EEPROM_START /**< @brief Config sector start address in EEPROM. */
+#define EEPROM_CONFIG_SIZE					128 /**< @brief Config sector size in EEPROM. */
 
 
-#ifdef DEBUG
+// CONFIG ADDRESSES
+#define CFG_ADDR_MARK						0 /**< @brief \ref DEVICE_CONFIGURED_MARK address. */
+
+
 // ----- EXTERNS
-extern sStd::Logger<LOG_BUFF> Serial;
+extern sEEPROM Config;
 
 
 // ----- FUNCTION DECLARATIONS
 /**
- * @brief Log RTC time and date.
+ * @brief Check storage stuff.
  * 
  * @return No return value.
  */
-void logRTC(void);
+void storageInit(void);
 
-/**
- * @brief Log temperature & relative humidity.
- * 
- * @return No return value.
- * 
- * @warning \c measure method must be called before calling this function!
- */
-void logTnH(void);
-#endif // DEBUG
 
-#endif // _LOG_H_
+/** @} */
+
+#endif // _STORAGE_H_
 
 // END WITH NEW LINE

@@ -1,13 +1,11 @@
-/**
- * @file TnH.h
- * @author silvio3105 (www.github.com/silvio3105)
- * @brief Hader file for temperature & humidity sensor module.
- * 
- * @copyright Copyright (c) 2023, silvio3105
- * 
- */
 
-/*
+# 3DCLK Firmware
+
+Soon
+
+
+# LICENSE
+
 License
 
 Copyright (c) 2023, silvio3105 (www.github.com/silvio3105)
@@ -21,35 +19,8 @@ THE PROJECT AND ITS CONTENT ARE PROVIDED "AS IS" WITH ALL FAULTS AND WITHOUT EXP
 THE AUTHOR KEEPS ALL RIGHTS TO CHANGE OR REMOVE THE CONTENTS OF THIS PROJECT WITHOUT PREVIOUS NOTICE.
 THE AUTHOR IS NOT RESPONSIBLE FOR DAMAGE OF ANY KIND OR LIABILITY CAUSED BY USING THE CONTENTS OF THIS PROJECT.
 
-This License shall be included in all methodal textual files.
-*/
+This License shall be included in all functional textual files.
 
+---
 
-#ifndef _TNH_H_
-#define _TNH_H_
-
-// ----- INCLUDE FILES
-#include			"main.h"
-#if (defined SHT40_AD || defined SHT40_B)
-#include			"SHT40.h"
-#endif
-
-
-// ----- FUNCTION DECLARATIONS
-/**
- * @brief Temperature & humidity sensor init.
- * 
- * @return No return value.
- */
-void tnhInit(void);
-
-
-// ----- EXTERNS
-#if (defined SHT40_AD || defined SHT40_B)
-extern SHT40 TnH;
-#endif
-
-
-#endif // _TNH_H_
-
-// END WITH NEW LINE
+Copyright (c) 2023, silvio3105

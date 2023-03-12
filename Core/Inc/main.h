@@ -51,7 +51,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include			"config.h"
+#include			"FWConfig.h"
 
 /* USER CODE END Includes */
 
@@ -72,7 +72,11 @@ struct Build {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
+extern volatile uint8_t wakeup;
+extern volatile uint32_t tick;
+extern uint8_t initFlags;
+extern uint8_t resetFlags;
+extern const Build buildInfo;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -84,13 +88,6 @@ struct Build {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
-/**
- * @brief Get reset reason from RCC.
- * 
- * @return No return value.
- */
-void getResetReason(void);
 
 /* USER CODE END EFP */
 
@@ -111,7 +108,7 @@ void getResetReason(void);
 /* USER CODE BEGIN Private defines */
 
 // SNIPPETS
-#define delay					LL_mDelay
+#define delay					LL_mDelay /**< @brief Alias for LL_mDelay. */
 
 // BITFIELDS
 #define INIT_TNH_POS			0
@@ -120,6 +117,9 @@ void getResetReason(void);
 #define INIT_LED_POS			1
 #define INIT_LED_MASK			0b00000010
 #define INIT_LED				(1 << INIT_LED_POS)
+#define INIT_BLE_POS			2
+#define INIT_BLE_MASK			0b00000100
+#define INIT_BLE				(1 << INIT_BLE_POS)
 
 /* USER CODE END Private defines */
 

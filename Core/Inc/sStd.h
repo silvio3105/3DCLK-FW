@@ -62,12 +62,16 @@ This License shall be included in all functional textual files.
 #define MAX2				SSTD_MAX2 /**< @brief Alias for \ref SSTD_MAX2 */
 #define MAX3				SSTD_MAX3 /**< @brief Alias for \ref SSTD_MAX3 */
 #define ABS					SSTD_ABS /**< @brief Alias for \ref SSTD_ABS */
+#define LIMIT				SSTD_LIMIT /**< @brief Alias for \ref SSTD_LIMIT */
 
 #define BSET				SSTD_BIT_SET /**< @brief Alias for \ref SSTD_BIT_SET */
 #define BCLEAR				SSTD_BIT_CLEAR /**< @brief Alias for \ref SSTD_BIT_CLEAR */
 #define BIT					SSTD_BIT /**< @brief Alias for \ref SSTD_BIT */
 #define BBIT				SSTD_BBIT /**< @brief Alias for \ref SSTD_BBIT */
 #define BTOGGLE				SSTD_BIT_TOGGLE /**< @brief Alias for \ref SSTD_BIT_TOGGLE */
+
+#define DEC2BCD_8			SSTD_DEC2BCD_8 /**< @brief Alias for \ref SSTD_DEC2BCD_8 */
+#define BCD2DEC_8			SSTD_BCD2DEC_8 /**< @brief Alias for \ref SSTD_BCD2DEC_8 */
 
 
 // ----- MACRO FUNCTIONS
@@ -139,6 +143,17 @@ This License shall be included in all functional textual files.
 #define SSTD_ABS(_in) \
 	((_in) < 0) ? (_in) * (-1) : (_in)
 
+/**
+ * @brief Limit/constrain value \c _in between \c _low and \c _high
+ * 
+ * @param _in Input value.
+ * @param _low Low limit value.
+ * @param _high High limit value.
+ * 
+ */
+#define SSTD_LIMIT(_in, _low, _high) \
+	(((_in) < (_low)) ? (_low) : (((_in) > (_high)) ? (_high) : (_in)))
+
 
 // BITFIELDS OPERATIONS
 /**
@@ -189,6 +204,28 @@ This License shall be included in all functional textual files.
  */
 #define SSTD_BIT_TOGGLE(_value, _bit) \
 	_value ^= 1 << (_bit)
+
+
+// CONVERSIONS
+/**
+ * @brief Convert 8-bit decimal value to BCD.
+ * 
+ * Example: 22 in decimal will become 0x22 in hex.
+ * 
+ * @param _in Input 8-bit value.
+ */
+#define SSTD_DEC2BCD_8(_in) \
+	((((_in)) / 10) << 4) + ((_in) % 10)
+
+/**
+ * @brief Convert 8-bit BCD value to decimal.
+ * 
+ * Example: 0x22 in BCD will become 22 in decimal.
+ * 
+ * @param _in Input 8-bit value.
+ */
+#define SSTD_BCD2DEC_8(_in) \
+	((((_in)) >> 4) * 10) + ((_in) & 0x0F)
 
 
 #ifdef __cplusplus
@@ -577,13 +614,83 @@ namespace sStd
 	};
 
 	// STRUCTS
+	/**
+	 * @brief Struct for input info for \ref sscan function.
+	 * 
+	 */
 	struct scanData {
 		char sepEnd; /**< End separator after wanted parameter. */
 		uint8_t sepCntEnd; /**< Number of \c sepEdn after wanted parameter is found. */
 		char sepBegin; /**< Begin separator before wanted parameter. */
 		uint8_t sepCntBegin; /**< Number of \c sepBegin before wanted parameter. */		
 		sStd::Data<char> output; /**< \c char type output data. */
-	};	
+	};
+
+
+	// MISC FUNCTIONS
+	/**
+	 * @brief Check if character is number.
+	 * 
+	 * @param ch Input character.
+	 * @return \c SSTD_NOK if \c ch is not number.
+	 * @return \c SSTD_OK if \c ch is number.
+	 */
+	uint8_t isNum(const char ch);
+
+	/**
+	 * @brief Convert character to number.
+	 * 
+	 * @param ch Input character.
+	 * @return Character converted to number.
+	 * 
+	 * @warning Function does not checks if input character is number. Use \ref isNum function to check if character is number.
+	 */
+	inline uint8_t char2Num(const char ch)
+	{
+		return (ch - '0');
+	}
+
+	/**
+	 * @brief Validate input value for minutes
+	 * 
+	 * @param in Input value.
+	 * @return \c SSTD_NOK if value \c in is not minutes.
+	 * @return \c SSTD_OK if value \c in is minutes.
+	 */
+	uint8_t isMin(uint8_t in);
+
+	/**
+	 * @brief Validate input value for seconds.
+	 * 
+	 * @param in Input value.
+	 * @return \c SSTD_NOK if value \c in is not seconds.
+	 * @return \c SSTD_OK if value \c in is seconds.
+	 */
+	inline uint8_t isSecond(uint8_t in)
+	{
+		return sStd::isMin(in);
+	}
+
+	/**
+	 * @brief Validate input value for hours.
+	 * 
+	 * @param in Input value.
+	 * @param format Hour format. \c 0 is 24 hour format. \c 1 is 12 hour format.
+	 * @return \c SSTD_NOK if input value \c in is not not hours.
+	 * @return \c SSTD_OK if input value \c in is hours.
+	 */
+	uint8_t isHour(uint8_t in, uint8_t format = 0);
+
+	/**
+	 * @brief Validate input date.
+	 * 
+	 * @param day Input day.
+	 * @param month Input month.
+	 * @param year Input year.
+	 * @return \c SSTD_NOK if date is not valid.
+	 * @return \c SSTD_OK if date if valid.
+	 */
+	uint8_t validateDate(uint8_t day, uint8_t month, uint16_t year);
 
 
 	// MATH FUNCTIONS
@@ -676,6 +783,25 @@ namespace sStd
 	}
 
 	/**
+	 * @brief Limit/constrain value \c in between \c low and \c high
+	 * 
+	 * @tparam Tin \c in data type.
+	 * @tparam Tlh \c low and \c high data type.
+	 * @param in Input value.
+	 * @param low Low limit value.
+	 * @param high High limit value.
+	 * @return \c in value if it is between \c low and \c high
+	 * @return \c min value if \c in is smaller than \c min
+	 * @return \c max value if \c in is greater than \c max
+	 * @return Return data type is \c Tlh
+	 */
+	template<typename Tin, typename Tlh>
+	Tlh limit(Tin in, Tlh low, Tlh high)
+	{
+		return SSTD_LIMIT(in, low, high);
+	}
+
+	/**
 	 * @brief Sum all integer digits.
 	 * 
 	 * Example: Number 123456 will result with 21(1 + 2 + 3 + 4 + 5 + 6).
@@ -704,6 +830,63 @@ namespace sStd
 		
 		// Return sum of all digits
 		return sum;		
+	}
+
+	// CONVERSION FUNCTION DECLARATIONS
+	/**
+	 * @brief Convert 8-bit decimal value to BCD.
+	 * 
+	 * Example: 22 in decimal will become 0x22 in hex.
+	 * 
+	 * @param num Input 8-bit value.
+	 * @return Value \c num in BCD.
+	 */
+	uint8_t dec2BCD(uint8_t num);
+
+	/**
+	 * @brief Convert 8-bit BCD value to decimal.
+	 * 
+	 * Example: 0x22 in BCD will become 22 in decimal.
+	 * 
+	 * @param num Input 8-bit value.
+	 * @return Value \c num in decimal.
+	 */
+	uint8_t BCD2dec(uint8_t num);
+
+	/**
+	 * @brief Convert C-string to decimal value.
+	 * 
+	 * @tparam T Decimal type, eg., \c uint8_t
+	 * @param str Pointer to C-string.
+	 * @param endChar End character of \c str string.
+	 * @return C-string number converted to decimal.
+	 */
+	template<typename T>
+	T str2Dec(const char* str, const char endChar = '\0')
+	{
+		T value = 0;
+		uint8_t idx = 0;
+
+		// Move to next char if first char is minus
+		if (str[0] == '-') idx++;
+
+		// While char is number and not equal to end char
+		while (str[idx] != endChar && sStd::isNum(str[idx]) == SSTD_OK)
+		{
+			// Add one digit to output value
+			value *= 10;
+
+			// Add converted char to output value 
+			value += sStd::char2Num(str[idx]);
+
+			// Move index
+			idx++;
+		}
+
+		// If first char is minus, convert output value to negative
+		if (str[0] == '-') value *= (-1);
+
+		return value;
 	}
 
 	// STRING MANIPULATION FUNCTIONS DECLARATIONS

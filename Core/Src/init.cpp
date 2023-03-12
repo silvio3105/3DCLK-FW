@@ -2,11 +2,28 @@
  * @file init.c
  * @author silvio3105 (www.github.com/silvio3105)
  * @brief Translation unit with CubeMX configuration.
- * @date 07.01.2023
  * 
- * @copyright Copyright (c) 2023
+ * @copyright Copyright (c) 2023, silvio3105
  * 
  */
+
+/*
+License
+
+Copyright (c) 2023, silvio3105 (www.github.com/silvio3105)
+
+Access and use of this Project and its contents are granted free of charge to any Person.
+The Person is allowed to copy, modify and use The Project and its contents only for non-commercial use.
+Commercial use of this Project and its contents is prohibited.
+Modifying this License and/or sublicensing is prohibited.
+
+THE PROJECT AND ITS CONTENT ARE PROVIDED "AS IS" WITH ALL FAULTS AND WITHOUT EXPRESSED OR IMPLIED WARRANTY.
+THE AUTHOR KEEPS ALL RIGHTS TO CHANGE OR REMOVE THE CONTENTS OF THIS PROJECT WITHOUT PREVIOUS NOTICE.
+THE AUTHOR IS NOT RESPONSIBLE FOR DAMAGE OF ANY KIND OR LIABILITY CAUSED BY USING THE CONTENTS OF THIS PROJECT.
+
+This License shall be included in all methodal textual files.
+*/
+
 
 // ----- INCLUDE FILES
 #include 			"init.h"
@@ -47,7 +64,7 @@ void SystemClock_Config(void)
 		LL_RCC_ForceBackupDomainReset();
 		LL_RCC_ReleaseBackupDomainReset();
 	}
-	LL_RCC_LSE_SetDriveCapability(LL_RCC_LSEDRIVE_LOW);
+	LL_RCC_LSE_SetDriveCapability(LSE_DRIVE);
 	LL_RCC_LSE_Enable();
 
 	/* Wait till LSE is ready */
@@ -77,6 +94,8 @@ void SystemClock_Config(void)
 	LL_RCC_SetUSARTClockSource(LL_RCC_USART1_CLKSOURCE_HSI);
 	LL_RCC_SetUSARTClockSource(LL_RCC_USART2_CLKSOURCE_PCLK1);
 	LL_RCC_SetI2CClockSource(LL_RCC_I2C1_CLKSOURCE_PCLK1);
+
+	SysTick_Config(16000000 / 1000);
 }
 
 /**
@@ -184,46 +203,6 @@ void MX_I2C1_Init(void)
 	LL_I2C_SetOwnAddress2(I2C1, 0, LL_I2C_OWNADDRESS2_NOMASK);
 }
 
-#ifndef DEBUG
-/**
-  * @brief IWDG Initialization Function
-  * @param None
-  * @retval None
-  */
-void MX_IWDG_Init(void)
-{
-	LL_IWDG_Enable(IWDG);
-	LL_IWDG_EnableWriteAccess(IWDG);
-	LL_IWDG_SetPrescaler(IWDG, LL_IWDG_PRESCALER_256);
-	LL_IWDG_SetReloadCounter(IWDG, 4095);
-	while (LL_IWDG_IsReady(IWDG) != 1)
-	{
-	}
-
-	LL_IWDG_ReloadCounter(IWDG);
-}
-#endif // DEBUG
-
-/**
-  * @brief RTC Initialization Function
-  * @param None
-  * @retval None
-  */
-void MX_RTC_Init(void)
-{
-	LL_RTC_InitTypeDef RTC_InitStruct = {0};
-
-	/* Peripheral clock enable */
-	LL_RCC_EnableRTC();
-
-	/** Initialize RTC and set the Time and Date
-	 */
-	RTC_InitStruct.HourFormat = LL_RTC_HOURFORMAT_24HOUR;
-	RTC_InitStruct.AsynchPrescaler = 127;
-	RTC_InitStruct.SynchPrescaler = 255;
-	LL_RTC_Init(RTC, &RTC_InitStruct);
-}
-
 /**
   * @brief TIM2 Initialization Function
   * @param None
@@ -314,17 +293,16 @@ void MX_USART1_UART_Init(void)
 	LL_DMA_SetPeriphSize(DMA1, LL_DMA_CHANNEL_3, LL_DMA_PDATAALIGN_BYTE);
 	LL_DMA_SetMemorySize(DMA1, LL_DMA_CHANNEL_3, LL_DMA_MDATAALIGN_BYTE);
 
-
-	USART_InitStruct.BaudRate = BLE_BAUD;
+	USART_InitStruct.BaudRate = BLE_UART_BAUD;
 	USART_InitStruct.DataWidth = LL_USART_DATAWIDTH_8B;
 	USART_InitStruct.StopBits = LL_USART_STOPBITS_1;
 	USART_InitStruct.Parity = LL_USART_PARITY_NONE;
 	USART_InitStruct.TransferDirection = LL_USART_DIRECTION_TX_RX;
 	USART_InitStruct.HardwareFlowControl = LL_USART_HWCONTROL_NONE;
 	USART_InitStruct.OverSampling = LL_USART_OVERSAMPLING_16;
-	LL_USART_Init(USART1, &USART_InitStruct);
-	LL_USART_ConfigAsyncMode(USART1);
-	LL_USART_Enable(USART1);
+	LL_USART_Init(BLE_UART, &USART_InitStruct);
+	LL_USART_ConfigAsyncMode(BLE_UART);
+	LL_USART_Enable(BLE_UART);
 }
 
 /**
@@ -356,16 +334,16 @@ void MX_USART2_UART_Init(void)
 	GPIO_InitStruct.Alternate = LL_GPIO_AF_4;
 	LL_GPIO_Init(RX_GPIO_Port, &GPIO_InitStruct);
 
-	USART_InitStruct.BaudRate = UART_BAUD;
+	USART_InitStruct.BaudRate = SYS_UART_BAUD;
 	USART_InitStruct.DataWidth = LL_USART_DATAWIDTH_8B;
 	USART_InitStruct.StopBits = LL_USART_STOPBITS_1;
 	USART_InitStruct.Parity = LL_USART_PARITY_NONE;
 	USART_InitStruct.TransferDirection = LL_USART_DIRECTION_TX_RX;
 	USART_InitStruct.HardwareFlowControl = LL_USART_HWCONTROL_NONE;
 	USART_InitStruct.OverSampling = LL_USART_OVERSAMPLING_16;
-	LL_USART_Init(USART2, &USART_InitStruct);
-	LL_USART_ConfigAsyncMode(USART2);
-	LL_USART_Enable(USART2);
+	LL_USART_Init(SYS_UART, &USART_InitStruct);
+	LL_USART_ConfigAsyncMode(SYS_UART);
+	LL_USART_Enable(SYS_UART);
 }
 
 /**
@@ -415,7 +393,7 @@ void MX_GPIO_Init(void)
 	GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
 	GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
 	GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-	GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+	GPIO_InitStruct.Pull = LL_GPIO_PULL_DOWN;
 	LL_GPIO_Init(BLE_RST_GPIO_Port, &GPIO_InitStruct);
 
 	/**/
@@ -431,12 +409,22 @@ void MX_GPIO_Init(void)
 	EXTI_InitStruct.Line_0_31 = LL_EXTI_LINE_1;
 	EXTI_InitStruct.LineCommand = ENABLE;
 	EXTI_InitStruct.Mode = LL_EXTI_MODE_IT;
-	EXTI_InitStruct.Trigger = LL_EXTI_TRIGGER_RISING;
+	EXTI_InitStruct.Trigger = LL_EXTI_TRIGGER_RISING_FALLING;
 	LL_EXTI_Init(&EXTI_InitStruct);
 
 	/* EXTI interrupt init*/
 	NVIC_SetPriority(EXTI0_1_IRQn, 0);
 	NVIC_EnableIRQ(EXTI0_1_IRQn);
+
+	// RTC clock output
+	#ifdef RTC_CLK_OUT
+	GPIO_InitStruct.Pin = RTC_CLK_GPIO_Pin;
+	GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+	GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+	GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+	GPIO_InitStruct.Pull = LL_GPIO_PULL_DOWN;
+	LL_GPIO_Init(RTC_CLK_GPIO_Port, &GPIO_InitStruct);	
+	#endif // RTC_CLK_OUT
 }
 
 /**

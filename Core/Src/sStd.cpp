@@ -45,6 +45,17 @@ static char* findToken(char* input, char sep, char sepCnt, const uint8_t retNull
 
 
 // ----- FUNCTIONS DEFINITIONS
+// CONVERSION FUNCTIONS
+uint8_t sStd::dec2BCD(uint8_t num)
+{
+    return SSTD_DEC2BCD_8(num);
+}
+
+uint8_t sStd::BCD2dec(uint8_t num)
+{
+	return SSTD_BCD2DEC_8(num);
+}
+
 // STRING MANIPULATION FUNCTIONS DEFINITIONS
 char* sStd::tok(char* input, char separator)
 {
@@ -112,6 +123,82 @@ uint8_t sStd::cmp(const char* input1, const char* input2, char endChar)
 	if (*input1 != *input2) return SSTD_NOK;
 
 	// Return equal status
+	return SSTD_OK;
+}
+
+
+// MISC FUNCTIONS
+uint8_t sStd::isNum(const char ch)
+{
+	if (ch >= '0' && ch <= '9') return SSTD_OK;
+
+	return (SSTD_NOK);
+}
+
+uint8_t sStd::isMin(uint8_t in)
+{
+	if (in < 0 || in > 59) return SSTD_NOK;
+
+	return SSTD_OK; 
+}
+
+uint8_t sStd::isHour(uint8_t in, uint8_t format)
+{
+	if (!format && in >= 0 && in < 24) return SSTD_OK;
+	else if (format && in > 0 && in < 13) return SSTD_OK;
+
+	return SSTD_NOK;
+}
+
+uint8_t sStd::validateDate(uint8_t day, uint8_t month, uint16_t year)
+{
+	// Validate year
+	if (year < 0 || year > 2100) return SSTD_NOK;
+
+	// Validate day
+	if (day < 0) return SSTD_NOK;
+
+	// Validate month and day
+	switch (month)
+	{
+		case 1:
+		case 3:
+		case 5:
+		case 7:
+		case 8:
+		case 10:
+		case 12:
+		{
+			if (day > 31) return SSTD_NOK;
+			break;
+		}
+
+		case 2:
+		{
+			// If is leap year
+			if (!(year % 4))
+			{
+				if (day > 29) return SSTD_NOK;
+			}
+			else // Not leap year
+			{
+				if (day > 28) return SSTD_NOK;
+			}
+			break;
+		}
+
+		case 4:
+		case 6:
+		case 9:
+		case 11:
+		{
+			if (day > 30) return SSTD_NOK;
+			break;
+		}
+
+		default: return SSTD_NOK;
+	}
+
 	return SSTD_OK;
 }
 

@@ -1,7 +1,7 @@
 /**
- * @file Log.h
+ * @file Storage.cpp
  * @author silvio3105 (www.github.com/silvio3105)
- * @brief Header file for log module.
+ * @brief Storage translation unit.
  * 
  * @copyright Copyright (c) 2023, silvio3105
  * 
@@ -25,53 +25,47 @@ This License shall be included in all methodal textual files.
 */
 
 
-#ifndef _LOG_H_
-#define _LOG_H_
-
 // ----- INCLUDE FILES
-#include			"main.h"
-#include			"sStd.h"
-#include			"Clock.h"
-#include			"sRTT.h"
+#include			"Storage.h"
+#include			"sEEPROM.h"
+#include			"Log.h"
 
 
-// ----- MACROS
-// Remove Logger functions if DEBUG is not defined
-#ifdef DEBUG
-#define log(...) \
-	Serial.print(__VA_ARGS__)
-
-#define logf(...) \
-	Serial.printf(__VA_ARGS__)
-#else
-#define log(...) 	
-#define logf(...) 
-#endif // DEBUG
-
-
-#ifdef DEBUG
-// ----- EXTERNS
-extern sStd::Logger<LOG_BUFF> Serial;
-
-
-// ----- FUNCTION DECLARATIONS
+// ----- OBJECTS
 /**
- * @brief Log RTC time and date.
+ * @brief EEPROM object for device configuration.
  * 
- * @return No return value.
+ * \c EEPROM_CONFIG_START "Partition" start address offset from MCU EEPROM start address.
+ * \c EEPROM_CONFIG_SIZE "Partition" size in bytes.
  */
-void logRTC(void);
+sEEPROM Config(EEPROM_CONFIG_START, EEPROM_CONFIG_SIZE);
 
-/**
- * @brief Log temperature & relative humidity.
- * 
- * @return No return value.
- * 
- * @warning \c measure method must be called before calling this function!
- */
-void logTnH(void);
-#endif // DEBUG
 
-#endif // _LOG_H_
+// ----- FUNCTION DEFINITIONS
+void storageInit(void)
+{
+	uint32_t configMark = 0;
+
+	// Read config mark bytes
+	Config.read(CFG_ADDR_MARK, &configMark, sizeof(configMark));
+
+	if (configMark == CFG_MARK)
+	{
+		// SOON: Add loading configuration
+		logf("Reading device configuration\n");
+	}
+	else
+	{
+		logf("Device not configured!\n");
+
+		configMark = CFG_MARK;
+		Config.write(CFG_ADDR_MARK, &configMark, sizeof(configMark));
+
+		// SOON: Write default config to EEPROM
+
+		logf("Device configured!\n");
+	}
+}
+
 
 // END WITH NEW LINE

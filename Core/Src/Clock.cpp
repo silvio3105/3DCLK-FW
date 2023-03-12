@@ -1,9 +1,9 @@
 /**
- * @file Log.h
+ * @file Clock.cpp
  * @author silvio3105 (www.github.com/silvio3105)
- * @brief Header file for log module.
+ * @brief Clock translation unit.
  * 
- * @copyright Copyright (c) 2023, silvio3105
+ * @copyright Copyright (c) 2023, silvio3105 
  * 
  */
 
@@ -25,53 +25,53 @@ This License shall be included in all methodal textual files.
 */
 
 
-#ifndef _LOG_H_
-#define _LOG_H_
-
 // ----- INCLUDE FILES
-#include			"main.h"
-#include			"sStd.h"
 #include			"Clock.h"
-#include			"sRTT.h"
+#include			"sRTC.h"
+#include			"FWConfig.h"
+#include			"Log.h"
+#include			"LED.h"
 
 
-// ----- MACROS
-// Remove Logger functions if DEBUG is not defined
-#ifdef DEBUG
-#define log(...) \
-	Serial.print(__VA_ARGS__)
+// ----- VARIABLES
+sRTC_time_t rtcTime;
+const char clockDays[7][4] = {
+	"Mon",
+	"Tue",
+	"Wed",
+	"Thu",
+	"Fri",
+	"Sat",
+	"Sun"
+};
 
-#define logf(...) \
-	Serial.printf(__VA_ARGS__)
-#else
-#define log(...) 	
-#define logf(...) 
-#endif // DEBUG
+const char clockAMPM[2][3] = {
+	"AM",
+	"PM"
+};
 
 
-#ifdef DEBUG
-// ----- EXTERNS
-extern sStd::Logger<LOG_BUFF> Serial;
+// ----- OBJECTS
+sRTC sClock(RTC_HANDLE);
 
 
-// ----- FUNCTION DECLARATIONS
-/**
- * @brief Log RTC time and date.
- * 
- * @return No return value.
- */
-void logRTC(void);
+// ----- FUNCTION DEFINITIONS
+void clockInit(void)
+{
+	// Configure RTC
+	sClock.init(CFG_TIME_FORMAT);
 
-/**
- * @brief Log temperature & relative humidity.
- * 
- * @return No return value.
- * 
- * @warning \c measure method must be called before calling this function!
- */
-void logTnH(void);
-#endif // DEBUG
+	// Calibrate RTC
+	#ifdef RTC_CALIBRATE
+	sClock.calibrate(RTC_CAL_DIR, RTC_CAL_VALUE, RTC_CAL_CYCLE);
+	#else
+	sClock.calibrate(sRTC_cal_dir_t::RTC_CAL_NEGATIVE, 0, RTC_CAL_CYCLE); // Reset calibration
+	#endif // RTC_CALIBRATE
 
-#endif // _LOG_H_
+	// Check if RTC time is set
+	if (!sClock.isSet()) log("Clock lost\n");		
+		else log("Clock OK!\n");	
+}
+
 
 // END WITH NEW LINE

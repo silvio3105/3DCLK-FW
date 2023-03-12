@@ -1,9 +1,9 @@
 /**
- * @file Log.h
+ * @file sADC.cpp
  * @author silvio3105 (www.github.com/silvio3105)
- * @brief Header file for log module.
+ * @brief Simple ADC translation unit.
  * 
- * @copyright Copyright (c) 2023, silvio3105
+ * @copyright Copyright (c) 2023
  * 
  */
 
@@ -25,53 +25,9 @@ This License shall be included in all methodal textual files.
 */
 
 
-#ifndef _LOG_H_
-#define _LOG_H_
-
 // ----- INCLUDE FILES
-#include			"main.h"
-#include			"sStd.h"
-#include			"Clock.h"
-#include			"sRTT.h"
+#include			"sADC.h"
 
 
-// ----- MACROS
-// Remove Logger functions if DEBUG is not defined
-#ifdef DEBUG
-#define log(...) \
-	Serial.print(__VA_ARGS__)
-
-#define logf(...) \
-	Serial.printf(__VA_ARGS__)
-#else
-#define log(...) 	
-#define logf(...) 
-#endif // DEBUG
-
-
-#ifdef DEBUG
-// ----- EXTERNS
-extern sStd::Logger<LOG_BUFF> Serial;
-
-
-// ----- FUNCTION DECLARATIONS
-/**
- * @brief Log RTC time and date.
- * 
- * @return No return value.
- */
-void logRTC(void);
-
-/**
- * @brief Log temperature & relative humidity.
- * 
- * @return No return value.
- * 
- * @warning \c measure method must be called before calling this function!
- */
-void logTnH(void);
-#endif // DEBUG
-
-#endif // _LOG_H_
 
 // END WITH NEW LINE

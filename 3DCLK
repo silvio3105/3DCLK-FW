@@ -2,23 +2,26 @@
 ######################################
 # CONFIG
 ######################################
-# CPU CORE
-CPU = -mcpu=cortex-m0plus
+# MAKEFILE FILE NAME
+MAKEFILE = 3DCLK
 
 # CHIP
 CHIP = STM32L051K8
 
 # START ADDRESS FOR .bin FILE
+ifeq ($(CHIP), STM32L051K8)
 ADDR = 0x08000000
+endif
 
-# LD SCRIPT FILE
-LDSCRIPT = STM32L051K8Tx_FLASH.ld
-
-# STARTUP FILE
-STARTUP = startup_stm32l051xx.s
+# CPU CORE
+ifeq ($(CHIP), STM32L051K8)
+CPU = -mcpu=cortex-m0plus
+endif
 
 # OUTPUT NAME
+ifeq ($(CHIP), STM32L051K8)
 TARGET = 3DCLK_FW
+endif
 
 # OUTPUT LOCATION
 BUILD_DIR = .build
@@ -56,19 +59,60 @@ DEF_LIB = 0
 # PRINT GCC VERSION AFTER BUILD
 PRINT_VER = 0
 
-# MAKEFILE FILE NAME
-MAKEFILE = mk
-
 # JLINK SCRIPTS
 FLASH_SCRIPT = JLink_Flash.jlink
 ERASE_SCRIPT = JLink_Erase.jlink
 
+# STARTUP FILE
+ifeq ($(CHIP), STM32L051K8)
+STARTUP = startup_stm32l051xx.s
+endif
+
+# LINKER SCRIPT FILE
+ifeq ($(CHIP), STM32L051K8)
+LDSCRIPT = STM32L051K8Tx_FLASH.ld
+endif
+
+# CHIP DEFINE
+ifeq ($(CHIP), STM32L051K8)
+C_DEFS = -DSTM32L051xx
+endif
+
 
 ######################################
-# TRANSLATION UNITS
+# CUSTOM TRANSLATION UNITS
 ######################################
 # C UNITS
-C_SOURCES =  \
+C_SOURCES = \
+Core/Src/SEGGER_RTT.c
+
+
+# C++ UNITS
+CPP_SOURCES =  \
+Core/Src/main.cpp \
+Core/Src/init.cpp \
+Core/Src/sStd.cpp \
+Core/Src/SHT40.cpp \
+Core/Src/LED.cpp \
+Core/Src/TnH.cpp \
+Core/Src/Log.cpp \
+Core/Src/sWatchdog.cpp \
+Core/Src/sRTC.cpp \
+Core/Src/Clock.cpp \
+Core/Src/sADC.cpp \
+Core/Src/sEEPROM.cpp \
+Core/Src/Storage.cpp \
+Core/Src/sBLE.cpp \
+Core/Src/BLE.cpp \
+Core/Src/Pwr.cpp \
+Core/Src/CMD.cpp
+
+
+######################################
+# MCU TRANSLATION UNITS
+######################################
+ifeq ($(CHIP), STM32L051K8)
+C_SOURCES +=  \
 Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_gpio.c \
 Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_adc.c \
 Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_dma.c \
@@ -82,16 +126,9 @@ Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_tim.c \
 Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_ll_usart.c \
 Core/Src/system_stm32l0xx.c
 
-# C++ UNITS
-CPP_SOURCES =  \
-Core/Src/main.cpp \
-Core/Src/stm32l0xx_it.cpp \
-Core/Src/init.cpp \
-Core/Src/sStd.cpp \
-Core/Src/SHT40.cpp \
-Core/Src/LED.cpp \
-Core/Src/TnH.cpp \
-Core/Src/Log.cpp
+CPP_SOURCES +=  \
+Core/Src/stm32l0xx_it.cpp
+endif
 
 
 # ASSEMBLER UNITS
@@ -108,10 +145,14 @@ AS_INCLUDES =  \
 
 # C/C++ INCLUDE DIRECTORIES
 C_INCLUDES =  \
--ICore/Inc \
+-ICore/Inc
+
+ifeq ($(CHIP), STM32L051K8)
+C_INCLUDES +=  \
 -IDrivers/STM32L0xx_HAL_Driver/Inc \
 -IDrivers/CMSIS/Device/ST/STM32L0xx/Include \
 -IDrivers/CMSIS/Include
+endif
 
 
 ######################################
@@ -122,6 +163,9 @@ AS_DEFS =  \
 
 
 # C/C++ DEFINES
+C_DEFS +=  \
+
+ifeq ($(CHIP), STM32L051K8)
 C_DEFS +=  \
 -DUSE_FULL_LL_DRIVER \
 -DHSE_VALUE=8000000 \
@@ -134,8 +178,8 @@ C_DEFS +=  \
 -DVDD_VALUE=3300 \
 -DPREFETCH_ENABLE=0 \
 -DINSTRUCTION_CACHE_ENABLE=1 \
--DDATA_CACHE_ENABLE=1 \
--DSTM32L051xx
+-DDATA_CACHE_ENABLE=1
+endif
 
 
 #######################################
@@ -185,7 +229,7 @@ BIN = $(CP) -O binary -S
 #######################################
 MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
 ASFLAGS += $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -Wdouble-promotion -Wshadow -Wformat=2 -Wformat-overflow -Wformat-truncation -fdata-sections -ffunction-sections
-CFLAGS += $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -Wdouble-promotion -Wshadow -Wformat=2 -Wformat-overflow -Wformat-truncation -fdata-sections -ffunction-sections 
+CFLAGS += $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -Wdouble-promotion -Wshadow -Wformat=2 -Wformat-overflow -Wformat-truncation -fdata-sections -ffunction-sections
 
 ifeq ($(GPP), 1)
 ifeq ($(RTTI), 0)

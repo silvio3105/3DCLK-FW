@@ -1,7 +1,7 @@
 /**
- * @file Log.h
+ * @file BLE.h
  * @author silvio3105 (www.github.com/silvio3105)
- * @brief Header file for log module.
+ * @brief Bluetooth LE module header file.
  * 
  * @copyright Copyright (c) 2023, silvio3105
  * 
@@ -24,54 +24,61 @@ THE AUTHOR IS NOT RESPONSIBLE FOR DAMAGE OF ANY KIND OR LIABILITY CAUSED BY USIN
 This License shall be included in all methodal textual files.
 */
 
-
-#ifndef _LOG_H_
-#define _LOG_H_
+#ifndef _BLE_H_
+#define _BLE_H_
 
 // ----- INCLUDE FILES
-#include			"main.h"
-#include			"sStd.h"
+#include			"sBLE.h"
+#include			"FWConfig.h"
 #include			"Clock.h"
-#include			"sRTT.h"
+#include			"sStd.h"
 
 
-// ----- MACROS
-// Remove Logger functions if DEBUG is not defined
-#ifdef DEBUG
-#define log(...) \
-	Serial.print(__VA_ARGS__)
-
-#define logf(...) \
-	Serial.printf(__VA_ARGS__)
-#else
-#define log(...) 	
-#define logf(...) 
-#endif // DEBUG
-
-
-#ifdef DEBUG
 // ----- EXTERNS
-extern sStd::Logger<LOG_BUFF> Serial;
+extern sBLE_HM BLE;
+extern volatile uint8_t bleConnAltered;
 
 
 // ----- FUNCTION DECLARATIONS
 /**
- * @brief Log RTC time and date.
+ * @brief Init BLE module.
  * 
  * @return No return value.
  */
-void logRTC(void);
+void bleInit(void);
 
 /**
- * @brief Log temperature & relative humidity.
+ * @brief Configure BLE module.
+ * 
+ * @return No return value.
+ */
+void bleConfig(void);
+
+/**
+ * @brief Print temperature & relative humidity over BLE.
  * 
  * @return No return value.
  * 
  * @warning \c measure method must be called before calling this function!
  */
-void logTnH(void);
-#endif // DEBUG
+void blePrintTnH(void);
 
-#endif // _LOG_H_
+/**
+ * @brief Print RTC time and date over BLE.
+ * 
+ * @return No return value.
+ */
+void blePrintRTC(void);
+
+/**
+ * @brief Get character over UART from BLE module.
+ * 
+ * @return No return value.
+ */
+void bleGetChar(void);
+
+
+
+#endif // _BLE_H_
 
 // END WITH NEW LINE

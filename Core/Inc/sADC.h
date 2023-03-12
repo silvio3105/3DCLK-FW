@@ -1,7 +1,7 @@
 /**
- * @file Log.h
+ * @file sADC.h
  * @author silvio3105 (www.github.com/silvio3105)
- * @brief Header file for log module.
+ * @brief Simple ADC driver header file.
  * 
  * @copyright Copyright (c) 2023, silvio3105
  * 
@@ -24,54 +24,61 @@ THE AUTHOR IS NOT RESPONSIBLE FOR DAMAGE OF ANY KIND OR LIABILITY CAUSED BY USIN
 This License shall be included in all methodal textual files.
 */
 
+#ifndef _SADC_H_
+#define _SADC_H_
 
-#ifndef _LOG_H_
-#define _LOG_H_
+/** \addtogroup sADC
+ * @{
+ * Simple ADC driver.
+*/
+
+// STM32L051
+#ifdef STM32L051xx
+
+/** \defgroup STM32L051
+ * @{
+ * ADC for STM32L051 MCU.
+*/
+
 
 // ----- INCLUDE FILES
-#include			"main.h"
-#include			"sStd.h"
-#include			"Clock.h"
-#include			"sRTT.h"
+#include			<stm32l051xx.h>
+#include			<system_stm32l0xx.h>
+
+// ----- CLASSES
+class sADC {
+	// PUBLIC STUFF
+	public:
+	// OBJECT CONSTRUCTORS AND DECONSTRUCTORS
+	/**
+	 * @brief Object constructor.
+	 * 
+	 * @param adcHandle Pointer to peripheral memory for ADC.
+	 * @return No return value.
+	 */
+	sADC(ADC_TypeDef* adcHandle);
+
+	/**
+	 * @brief Object deconstructor.
+	 * 
+	 * @return No return value.
+	 */
+	~sADC(void);
 
 
-// ----- MACROS
-// Remove Logger functions if DEBUG is not defined
-#ifdef DEBUG
-#define log(...) \
-	Serial.print(__VA_ARGS__)
-
-#define logf(...) \
-	Serial.printf(__VA_ARGS__)
-#else
-#define log(...) 	
-#define logf(...) 
-#endif // DEBUG
+	// PRIVATE STUFF
+	private:
+	// VARIABLES
+	ADC_TypeDef* handle = nullptr; /**< @brief ADC handle. */
+};
 
 
-#ifdef DEBUG
-// ----- EXTERNS
-extern sStd::Logger<LOG_BUFF> Serial;
+/**@}*/
 
+#endif // STM32L051xx
 
-// ----- FUNCTION DECLARATIONS
-/**
- * @brief Log RTC time and date.
- * 
- * @return No return value.
- */
-void logRTC(void);
+/**@}*/
 
-/**
- * @brief Log temperature & relative humidity.
- * 
- * @return No return value.
- * 
- * @warning \c measure method must be called before calling this function!
- */
-void logTnH(void);
-#endif // DEBUG
-
-#endif // _LOG_H_
+#endif // _SADC_H_
 
 // END WITH NEW LINE
