@@ -52,7 +52,7 @@ This License shall be included in all methodal textual files.
  * 
  * @warning 7 characters max!
  */
-#define FW_VER				"v0.1rc1"
+#define FW_VER				"v1.0rc1"
 
 
 // ----- HARDWARE SELECTION
