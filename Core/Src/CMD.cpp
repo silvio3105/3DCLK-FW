@@ -34,6 +34,7 @@ This License shall be included in all methodal textual files.
 #include			"FWConfig.h"
 #include			"Clock.h"
 #include			"main.h"
+#include			"sBuildInfo.h"
 
 
 // ----- CODE SNIPPETS
@@ -149,7 +150,7 @@ SCMD_HANDLER(info)
 	BLE.print("\n3D Clock info:\n", 17);
 
 	// Print firmware stuff
-	BLE.printf("FW: %s\nHW: %s\nBuild: %s\nReset: %d\n", buildInfo.FW, buildInfo.HW, buildInfo.DATE, resetFlags);
+	BLE.printf("FW: %s\nHW: %s\nBuild: %s\nReset: %d\n", SBUILD_VER, SBUILD_REV, SBUILD_DATE, resetFlags);
 
 	// Print RTC and TnH stuff
 	blePrintRTC();

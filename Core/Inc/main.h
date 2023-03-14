@@ -57,17 +57,6 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
-/**
- * @brief Strust for build info.
- * 
- */
-struct Build {
-	char FW[16]; /**< @brief C-string for firmware version. */
-	char HW[16]; /**< @brief C-string for hardware version. */
-	char DATE[16]; /**< @brief C-string for build date. */
-};
-
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -76,7 +65,6 @@ extern volatile uint8_t wakeup;
 extern volatile uint32_t tick;
 extern uint8_t initFlags;
 extern uint8_t resetFlags;
-extern const Build buildInfo;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/

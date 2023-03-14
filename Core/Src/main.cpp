@@ -26,6 +26,7 @@ This License shall be included in all methodal textual files.
 
 // ----- INCLUDE FILES
 #include 			"main.h"
+#include			"sBuildInfo.h"
 #include			"FWConfig.h"
 #include			"init.h"
 #include			"sStd.h"
@@ -55,16 +56,11 @@ static void getResetReason(void);
 
 // ----- VARIABLES
 /**
- * @brief Build info struct.
+ * @brief Build info struct in flash memory.
  * 
- * Placed right below vector table. Section \c buildData is defined in linker file.
- * Offset is \c 0xC0
+ * Placed right below vector table. Offset is \c 0xC0
  */
-const Build buildInfo __attribute__((section(".buildData"))) = {
-	"" FW_NAME " " FW_VER "", /**< @brief Build version. */
-	HW_VER, /**< @brief Hardware version. */
-	__DATE__ /**< @brief Build date. */
-};
+SBUILD(FW_NAME, FW_VER, HW_VER, __DATE__);
 
 /**
  * @brief Custom stuff init flags.
@@ -110,9 +106,9 @@ int main(void)
 	#endif // DEBUG
 
 	// Firmware and hardware info
-	logf("\n\nFW: %s\n", buildInfo.FW);
-	logf("HW: %s\n", buildInfo.HW);
-	logf("Build: %s\n", buildInfo.DATE);
+	logf("\n\nFW: %s\n", SBUILD_VER);
+	logf("HW: %s\n", SBUILD_REV);
+	logf("Build: %s\n", SBUILD_DATE);
 
 	// Reset reason
 	getResetReason();
@@ -201,7 +197,7 @@ int main(void)
 				delay(250); // SOON: Test it for lowest value
 
 				// Print welcome message
-				BLE.printf("\n3D Clock\nFW: %s\nHW: %s\nBuild: %s\nReset: %d\n%sType help for list of commands\n", buildInfo.FW, buildInfo.HW, buildInfo.DATE, resetFlags, sClock.isSet() ? "\0" : "->> CLOCK LOST\n");
+				BLE.printf("\n3D Clock\nFW: %s\nHW: %s\nBuild: %s\nReset: %d\n%sType help for list of commands\n", SBUILD_NAME, SBUILD_REV, SBUILD_DATE, resetFlags, sClock.isSet() ? "\0" : "->> CLOCK LOST\n");
 
 				// Get RTC time
 				clockGetTime();
