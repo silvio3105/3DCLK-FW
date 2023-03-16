@@ -47,6 +47,15 @@ enum led_panel_t : uint8_t {
 	LED_PANEL4 = 4 /**< @brief Index for fourth LED panel. */
 };
 
+/**
+ * @brief LED line brightness update direction.
+ * 
+ */
+enum led_update_brightness_dir_t : uint8_t {
+	LED_UPDATE_POS = 0, /**< @brief Update LED line brightness from lower to greater value. */
+	LED_UPDATE_NEG	/**< @brief Update LED line brightness from greater to lower value. */
+};
+
 
 // ----- STRUCTS
 /**
@@ -197,6 +206,22 @@ void ledShowRST(void);
  * @return No return value.
  */
 void ledShowBLE(void);
+
+/**
+ * @brief Calculate new LED line brightness with measured LDR value.
+ * 
+ * @return No return value.
+ */
+void ledCalculateBrightness(void);
+
+/**
+ * @brief Set LED line brightness.
+ * 
+ * @param value New LED line brightness(0-100%).
+ * @return No return value.
+ */
+void ledSetBrightness(uint8_t value);
+
 
 #endif // _LED_H_
 
