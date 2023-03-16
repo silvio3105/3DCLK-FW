@@ -43,6 +43,7 @@ This License shall be included in all methodal textual files.
 #include			"Clock.h"
 #include			"Storage.h"
 #include			"BLE.h"
+#include			"LDR.h"
 
 
 // ----- STATIC FUNCTION DECLARATIONS
@@ -234,11 +235,8 @@ int main(void)
 			// Reset wakeup flag
 			wakeup = 0;
 
-			// Enable LDR ADC
-			LL_ADC_Enable(LDR_ADC);
-
-			// Measure LDR
-			LL_ADC_REG_StartConversion(LDR_ADC);
+			// Start LDR voltage measuring
+			ldrStart();
 
 			// Measure TnH stuff
 			TnH.measure(TNH_MEASURE_TYPE);
@@ -254,12 +252,8 @@ int main(void)
 				logRTC();
 				#endif // DEBUG_WAKEUP
 
-				// Adjust LED brightness
-				while (LL_ADC_REG_IsConversionOngoing(LDR_ADC));
-				uint16_t ldr = sStd::limit<uint16_t, uint16_t>(LL_ADC_REG_ReadConversionData12(LDR_ADC), 60, 90);
-				LL_ADC_Disable(LDR_ADC);
-				uint8_t led_ldr = SSTD_SCALE(ldr, 60, 90, 1, 100);
-				LEDs.brightness(led_ldr);
+				// Calculate new LED brightness
+				ledCalculateBrightness();
 
 				// Tick display if BLE is not connected
 				if (BLE.isConnected() == SBLE_NOK) Display.tick();				
