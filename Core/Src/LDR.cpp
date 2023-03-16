@@ -29,13 +29,13 @@ This License shall be included in all methodal textual files.
 #include			"LDR.h"
 #include			"main.h"
 #include 			"FWConfig.h"
+#include			"sStd.h"
 
 #include			<stdint.h>
 
 
 // ----- VARIABLES
 uint16_t ldrValue = 0; /**< @brief Current LDR ADC value. */
-uint16_t ldrOldValue = 0; /**< @brief Previous LDR ADC value. */
 
 
 // ----- FUNCTION DEFINITIONS
@@ -53,11 +53,11 @@ void ldrGetValue(void)
 	// Wait if conversion is not done yet
 	while (LL_ADC_REG_IsConversionOngoing(LDR_ADC));
 
-	// Copy old ADC value
-	ldrOldValue = ldrValue;
-
 	// Get ADC value
 	ldrValue = LL_ADC_REG_ReadConversionData12(LDR_ADC);
+
+	// Limit LDR value between minimum and maximum expected LDR value
+	ldrValue = sStd::limit<uint16_t, uint16_t>(ldrValue, LDR_MIN_VALUE, LDR_MAX_VALUE);	
 
 	// Disable ADC
 	LL_ADC_Disable(LDR_ADC);
