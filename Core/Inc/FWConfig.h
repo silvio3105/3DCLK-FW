@@ -87,6 +87,9 @@ This License shall be included in all methodal textual files.
 #define LED_INFO_TOTAL				5 /**< @brief Total number of info can LED display will show. */
 
 // LED DEFAULT COLORS AND BRIGHTNESS
+#define LED_MIN_BRIGHTNESS			1 /**< @brief Minimum LED line brightness. */
+#define LED_MAX_BRIGHTNESS			100 /**< @brief Maximum LED line brightness. */
+
 #define LED_COLOR_BLE_CONN			ProgLED_rgb_t::NEON_GREEN /**< @brief LED color if BLE has connection. */
 #define LED_BRGHT_BLE_CONN			100 /**< @brief LED brightness if BLE has connection. */
 
