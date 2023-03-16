@@ -123,6 +123,21 @@ This License shall be included in all methodal textual files.
 // LDR
 #ifdef STM32L051K8
 #define LDR_ADC						ADC1 /**< @brief ADC for measuring light with LDR. */
+#define LDR_THRESHOLD				2 /**< @brief LDR threshold for calculating new LED brightness. */
+
+/**
+ * @brief Minimum expected LDR value.
+ * 
+ * If measured LDR value is lower than this value, it will be set to value of \c LDR_MIN_VALUE macro.
+ */
+#define LDR_MIN_VALUE				60
+
+/**
+ * @brief Maximum expected LDR value.
+ * 
+ * If measured LDR value is greater than this value, it will be set to value of \c LDR_MAX_VALUE macro.
+ */
+#define LDR_MAX_VALUE				90
 #endif // STM32L051K8
 
 // LSE & RTC
