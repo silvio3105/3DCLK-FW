@@ -68,10 +68,10 @@ This License shall be included in all methodal textual files.
  * 
  */
 struct build_info_t {
-	char fwName[16]; /**< @brief C-string for firmware name. */
-	char fwVer[16]; /**< @brief C-string for firmware version. */
-	char hwRev[16]; /**< @brief C-string for hardware revision. */
-	char buildDate[16]; /**< @brief C-string for build date. */
+	const char fwName[16]; /**< @brief C-string for firmware name. */
+	const char fwVer[16]; /**< @brief C-string for firmware version. */
+	const char hwRev[16]; /**< @brief C-string for hardware revision. */
+	const char buildDate[16]; /**< @brief C-string for build date. */
 };
 
 
