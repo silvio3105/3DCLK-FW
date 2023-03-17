@@ -32,21 +32,22 @@ This License shall be included in all methodal textual files.
 /** \addtogroup sBuildInfo 
  * Simple Build Info library
  * 
- * User must ensure \c buildInfo section exist in linker file.
+ * Library can be used only with GCC toolchain.
+ * User must ensure \c buildInfo section exists in linker file.
  * @{
 */
 
 
 // ----- CODE SNIPPETS
 /**
- * @brief Code snippet for creating build info struct in flash memory.
+ * @brief Code snippet for creating build info data in flash memory.
  * 
- * Struct is placed inside \c buildInfo section in flash memory.
+ * Data is placed inside \c buildInfo section in flash memory.
  * 
  * @param _name Firmware name. Max 16 chars.
  * @param _ver Firmware version. Max 16 chars.
  * @param _rev Hardware revision. Max 16 chars.
- * @param _date Build date. Max 16 chars.
+ * @param _date Build date. Max 12 chars.
  */
 #define SBUILD(_name, _ver, _rev, _date) \
 	const build_info_t buildInfo __attribute__((section(".buildInfo"))) = { \
@@ -56,9 +57,36 @@ This License shall be included in all methodal textual files.
 		_date \
 	}
 
-#define SBUILD_NAME			buildInfo.fwName /**< @brief Code snippet for build firmware name. */
-#define SBUILD_VER			buildInfo.fwVer /**< @brief Code snippet for build firmware version. */
-#define SBUILD_REV			buildInfo.hwRev /**< @brief Code snippet for build hardware revision. */
+/**
+ * @brief Code snippet for creating build info data in flash memory.
+ * 
+ * With this snippet, firmware name is replaced with firmware tag and variant, both 8 characters long.
+ * Data is placed inside \c buildInfo section in flash memory.
+ * 
+ * @param _tag Firmware tag. Max 8 chars.
+ * @param _variant Firmware variant. Max 8 chars.
+ * @param _ver Firmware version. Max 16 chars.
+ * @param _rev Hardware revision. Max 16 chars.
+ * @param _date Build date. Max 12 chars.
+ * 
+ * @warning GCC 11.3+ is needed for this snippet.
+ */
+#define SBUILD_EXT(_tag, _variant, _ver, _rev, _date) \
+	const build_info_t buildInfo __attribute__((section(".buildInfo"))) = { \
+		{ \
+			.tag = _tag, \
+			_variant \
+		}, \
+		_ver, \
+		_rev, \
+		_date \
+	}
+
+#define SBUILD_NAME			buildInfo.fw.name /**< @brief Code snippet for firmware build name. */
+#define SBUILD_TAG			buildInfo.fw.tag /**< @brief Code snippet for firmware tag used in build. */
+#define SBUILD_VARIANT		buildInfo.fw.variant /**< @brief Code snippet for firmware variant used in build. */
+#define SBUILD_VER			buildInfo.fwVer /**< @brief Code snippet for firmware build version. */
+#define SBUILD_REV			buildInfo.hwRev /**< @brief Code snippet for hardware build revision. */
 #define SBUILD_DATE			buildInfo.buildDate /**< @brief Code snippet for build date. */
 
 
@@ -68,10 +96,20 @@ This License shall be included in all methodal textual files.
  * 
  */
 struct build_info_t {
-	const char fwName[16]; /**< @brief C-string for firmware name. */
+	/**
+	 * @brief Union of firmware name, tag and variant.
+	 * 
+	 */
+	union {
+		const char name[16]; /**< @brief C-string for firmware name. */
+		struct {
+			const char tag[8]; /**< @brief C-string for firmware tag. */
+			const char variant[8]; /**< @brief C-string for firmware variant name. */
+		};
+	} fw;
 	const char fwVer[16]; /**< @brief C-string for firmware version. */
 	const char hwRev[16]; /**< @brief C-string for hardware revision. */
-	const char buildDate[16]; /**< @brief C-string for build date. */
+	const char buildDate[12]; /**< @brief C-string for build date. */
 };
 
 
