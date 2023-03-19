@@ -48,7 +48,7 @@ void ldrStart(void)
 	LL_ADC_REG_StartConversion(LDR_ADC);
 }
 
-void ldrGetValue(void)
+void ldrGetValue(uint8_t limit)
 {
 	// Wait if conversion is not done yet
 	while (LL_ADC_REG_IsConversionOngoing(LDR_ADC));
@@ -57,7 +57,7 @@ void ldrGetValue(void)
 	ldrValue = LL_ADC_REG_ReadConversionData12(LDR_ADC);
 
 	// Limit LDR value between minimum and maximum expected LDR value
-	ldrValue = sStd::limit<uint16_t, uint16_t>(ldrValue, LDR_MIN_VALUE, LDR_MAX_VALUE);	
+	if (limit) ldrValue = sStd::limit<uint16_t, uint16_t>(ldrValue, LDR_MIN_VALUE, LDR_MAX_VALUE);
 
 	// Disable ADC
 	LL_ADC_Disable(LDR_ADC);

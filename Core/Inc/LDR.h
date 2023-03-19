@@ -49,9 +49,10 @@ void ldrStart(void);
 /**
  * @brief Get ADC value from LDR channel.
  * 
+ * @param limit Set to \c 1 to limit measured value between \ref LDR_MIN_VALUE and \ref LDR_MAX_VALUE
  * @return No return value.
  */
-void ldrGetValue(void);
+void ldrGetValue(uint8_t limit);
 
 
 // ----- EXTERNS
