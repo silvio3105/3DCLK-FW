@@ -39,7 +39,7 @@ This License shall be included in all methodal textual files.
 
 
 // ----- HARDWARE MISC INFO
-#define HW_VER						"22-0091rev1" /**< @brief Hardware version. 16 chars max! */
+#define HW_REV							"22-0091rev1" /**< @brief Hardware revision. 16 chars max! */
 
 
 // ----- HARDWARE SELECTION
@@ -123,7 +123,6 @@ This License shall be included in all methodal textual files.
 // LDR
 #ifdef STM32L051K8
 #define LDR_ADC						ADC1 /**< @brief ADC for measuring light with LDR. */
-#define LDR_THRESHOLD				2 /**< @brief LDR threshold for calculating new LED brightness. */
 
 /**
  * @brief Minimum expected LDR value.
