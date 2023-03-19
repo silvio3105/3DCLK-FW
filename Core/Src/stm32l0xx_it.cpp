@@ -68,12 +68,17 @@ void RTC_IRQHandler(void)
 	// if (RTC->ISR & RTC_ISR_WUTF)
 
 	#ifdef RTC_CLK_OUT
-	// Toggle RTC_CLK
+	// Set high RTC_CLK pin
 	RTC_CLK_GPIO_Port->ODR |= RTC_CLK_GPIO_Pin;
+
+	// Start RTC wakeup timer
 	sClock.wakeupStart(SYS_WAKEUP);
+
+	// Minimal delay
 	delay(0);
+
+	// Set low RTC_CLK pin
 	RTC_CLK_GPIO_Port->BRR |= RTC_CLK_GPIO_Pin;
-	
 	#endif // RTC_CLK_OUT
 
 	// Clear EXTI line pending interrupt flag
