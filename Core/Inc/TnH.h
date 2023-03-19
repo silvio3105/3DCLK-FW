@@ -49,6 +49,8 @@ void tnhInit(void);
 extern SHT40 TnH;
 #endif
 
+extern uint8_t tnhTicks;
+
 
 #endif // _TNH_H_
 

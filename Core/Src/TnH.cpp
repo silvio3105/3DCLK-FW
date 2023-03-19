@@ -31,6 +31,10 @@ This License shall be included in all methodal textual files.
 #include			"Log.h"
 
 
+// ----- VARIABLES
+uint8_t tnhTicks = TNH_TICKS; /**< @brief Number of ticks between two TnH measures. Defined with \ref TNH_TICKS */
+
+
 // ----- FUNCTION DECLARATIONS
 static void I2C1read(uint8_t addr, uint8_t* data, uint8_t len, uint16_t d);
 static void I2C1write(uint8_t addr, uint8_t* data, uint8_t len, uint16_t d);
