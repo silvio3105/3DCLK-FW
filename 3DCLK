@@ -196,12 +196,15 @@ OPT += -Ofast
 endif
 
 ifeq ($(RELEASE), 0)
+
 ifeq ($(USE_G3), 1)
 CFLAGS += -g3
 else
 CFLAGS += -g
 endif
+
 CFLAGS += -gdwarf-2
+
 else ifeq ($(FLTO), 1)
 CFLAGS += -flto
 ASFLAGS += -flto
@@ -229,8 +232,8 @@ BIN = $(CP) -O binary -S
 # C/C++ FLAGS
 #######################################
 MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
-ASFLAGS += $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -Wdouble-promotion -Wshadow -Wformat=2 -Wformat-overflow -Wformat-truncation -fdata-sections -ffunction-sections
-CFLAGS += $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -Wdouble-promotion -Wshadow -Wformat=2 -Wformat-overflow -Wformat-truncation -fdata-sections -ffunction-sections
+ASFLAGS += $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -Wdouble-promotion -Wshadow -Wformat=2 -Wformat-overflow -Wformat-truncation -fdata-sections -ffunction-sections -Wl,--gc-sections
+CFLAGS += $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -Wdouble-promotion -Wshadow -Wformat=2 -Wformat-overflow -Wformat-truncation -fdata-sections -ffunction-sections -Wl,--gc-sections
 
 ifeq ($(GPP), 1)
 ifeq ($(RTTI), 0)
@@ -245,8 +248,9 @@ CFLAGS += -fno-exceptions
 endif
 
 ifeq ($(DEF_LIB), 0)
-ASFLAGS += -nodefaultlibs
-CFLAGS += -nodefaultlibs
+ASFLAGS += -nodefaultlibs -nostdlib
+CFLAGS += -nodefaultlibs -nostdlib
+LDFLAGS += -nodefaultlibs
 endif
 
 ifeq ($(STACK_ANALYSIS), 1)
@@ -267,7 +271,7 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 #######################################
 LIBS = -lc -lm -lnosys 
 LIBDIR = 
-LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref,--gc-sections,--print-memory-usage
+LDFLAGS += $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,--gc-sections,-Map=$(BUILD_DIR)/$(TARGET).map,--cref,--print-memory-usage -s
 
 
 #######################################
@@ -336,6 +340,22 @@ clean:
 	if exist $(FLASH_SCRIPT) (echo Deleting flash script & del $(FLASH_SCRIPT))
 	if exist $(ERASE_SCRIPT) (echo Deleting erase script & del $(ERASE_SCRIPT))
 
+
+nm:
+	cls
+	$(PREFIX)nm.exe -S -g --size-sort $(BUILD_DIR)/$(TARGET).elf
+
+dump:
+	cls
+	$(PREFIX)objdump -t $(BUILD_DIR)/$(TARGET).elf
+
+readelf:
+	cls
+	$(PREFIX)readelf -S $(BUILD_DIR)/$(TARGET).elf
+
+size:
+	cls
+	$(PREFIX)size -A -d $(BUILD_DIR)/$(TARGET).elf	
 
 
 -include $(wildcard $(BUILD_DIR)/*.d)
