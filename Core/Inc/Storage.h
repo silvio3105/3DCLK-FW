@@ -45,7 +45,7 @@ This License shall be included in all methodal textual files.
 
 
 // CONFIG ADDRESSES
-#define CFG_ADDR_MARK						0 /**< @brief \ref DEVICE_CONFIGURED_MARK address. */
+#define CFG_ADDR_MARK						0 /**< @brief Address offset where configuration mark is located. */
 
 
 // ----- EXTERNS
