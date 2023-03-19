@@ -82,9 +82,15 @@ This License shall be included in all methodal textual files.
 #define CYCLE_TICK_SUM				(CYCLE_TICK_TIME + CYCLE_TICK_DAY + CYCLE_TICK_DATE + CYCLE_TICK_TEMP + CYCLE_TICK_RH) /**< @brief Sum of all cycle ticks. */
 
 // LEDS
+#ifdef DEBUG
 #define LEDS						9 /**< @brief Number of LEDs. */
+#else
+#define LEDS						30 /**< @brief Number of LEDs. */
+#endif // DEBUG
 #define LED_LINE					ProgLED_line_t::NON_BLOCKING /**< @brief LED line type. */
 #define LED_INFO_TOTAL				5 /**< @brief Total number of info can LED display will show. */
+#define LED_BRIGHTNESS_UPDATE		1500 /**< @brief LED brightness update duration in ms. */
+#define LED_UPDATE_THRESHOLD		3 /**< @brief Minimum difference in brightness for triggering LED brightness update. Keep below between 3-6%. */
 
 // LED DEFAULT COLORS AND BRIGHTNESS
 #define LED_MIN_BRIGHTNESS			1 /**< @brief Minimum LED line brightness. */
@@ -97,13 +103,14 @@ This License shall be included in all methodal textual files.
 #define LED_BRGHT_ERROR				8 /**< @brief LED brightness for errors. */
 
 #define LED_COLOR_TIME				ProgLED_rgb_t::RED /**< @brief Default color for time info on LED display. */
-#define LED_COLOR_DAY				ProgLED_rgb_t::AMBER /**< @brief Default color for day info on LED display. */
+#define LED_COLOR_DAY				ProgLED_rgb_t::YELLOW /**< @brief Default color for day info on LED display. */
 #define LED_COLOR_DATE				ProgLED_rgb_t::ORANGE /**< @brief Default color for date info on LED display. */
 #define LED_COLOR_TEMP				ProgLED_rgb_t::NEON_GREEN /**< @brief Default color for temperature info on LED display. */
 #define LED_COLOR_RH				ProgLED_rgb_t::CYAN /**< @brief Default color for relative humidity info on LED display. */
 
 // TNH STUFF
 #define TNH_MEASURE_TYPE			SHT40_meas_t::TRH_H /**< @brief Default measure type for temperature and relative humidity. */
+#define TNH_TICKS					10 /**< @brief Number of system ticks between two TnH measures. Period of one tick is defined with \ref SYS_WAKEUP  */
 
 // BLE STUFF
 #define BLE_RX_BUFFER				64 /**< @brief Size of buffer in bytes for BLE input. */
@@ -118,7 +125,7 @@ This License shall be included in all methodal textual files.
 #define LOG_RTT_CH					0 /**< @brief RTT channel. */
 #define DEBUG_WAKEUP				/**< @brief Enable debug prints on RTC wakeup. */
 //#define DEBUG_LED					/**< @brief Enable debug prints for LED display. */
-//#define RTC_CLK_OUT					/**< @brief Simulate \c ck_spre clock output. Set to \c 1 to enable \c ck_spre clock output. */
+//#define RTC_CLK_OUT				/**< @brief Simulate \c ck_spre clock output. Set to \c 1 to enable \c ck_spre clock output. */
 #endif // DEBUG
 
 
