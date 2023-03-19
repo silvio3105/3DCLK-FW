@@ -143,6 +143,7 @@ class LedDisplay {
 // ----- EXTERNS
 extern ProgLED<LEDS, LED_FORMAT> LEDs;
 extern LedDisplay<LED_INFO_TOTAL> Display;
+extern uint16_t ledBrightnessUpdatePeriod;
 
 
 // ----- FUNCTION DECLARATIONS
@@ -212,7 +213,7 @@ void ledShowBLE(void);
  * 
  * @return No return value.
  */
-void ledCalculateBrightness(void);
+void ledCalculateTargetBrightness(void);
 
 /**
  * @brief Set LED line brightness.
@@ -221,6 +222,21 @@ void ledCalculateBrightness(void);
  * @return No return value.
  */
 void ledSetBrightness(uint8_t value);
+
+/**
+ * @brief Check if LED line needs brightness update.
+ * 
+ * @return \c 0 if LED line does not need brightness update.
+ * @return \c 1 if LED line does need brightness update.
+ */
+uint8_t ledNeedUpdate(void);
+
+/**
+ * @brief Update LED brightness if needed.
+ * 
+ * @return No return value.
+ */
+void ledUpdateBrightness(void);
 
 
 #endif // _LED_H_

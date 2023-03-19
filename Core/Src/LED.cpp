@@ -155,6 +155,8 @@ uint8_t ledUpdateFlag = 0; /**< @brief LED update flag. If set, LEDs will be upd
 uint8_t ledCurrentBrightness = 0; /**< @brief Current LED line brightness. */
 uint8_t ledTargetBrightness = 0; /**< @brief Target LED line brightness. */
 led_update_brightness_dir_t ledBrightnessUpdateDir = led_update_brightness_dir_t::LED_UPDATE_POS; /**< @brief LED line brightness update direction indicator. */
+uint16_t ledBrightnessUpdatePeriod = 0; /**< @brief LED brightness update period in ms. */
+uint32_t ledLastUpdateTick = 0; /**< @brief Tick of last LED brightness update. */
 
 
 // ----- OBJECTS
@@ -384,27 +386,29 @@ void ledShowBLE(void)
 	ledPrint("-BLE"); // SOON: Remove "-" before BLE	
 }
 
-void ledCalculateBrightness(void)
+void ledCalculateTargetBrightness(void)
 {
-	static uint16_t ldrOldValue = 0;
+	uint8_t diff = 0;
 
-	// Get value from LDR
-	ldrGetValue();
+	// Calculate target LED brightness
+	ledTargetBrightness = (uint8_t)sStd::scale<uint16_t>(ldrValue, LDR_MIN_VALUE, LDR_MAX_VALUE, LED_MIN_BRIGHTNESS, LED_MAX_BRIGHTNESS);
 
-	// If absolute difference between old and new value is greater than threshold
-	if (sStd::abs<uint16_t>(ldrValue - ldrOldValue) >= LDR_THRESHOLD)
-	{
-		log("Calculating new LED brightness\n");
+	// Calculate absolute difference between current and target LED brightness
+	diff = sStd::abs<uint16_t>(ledTargetBrightness - ledCurrentBrightness);
 
-		// Update old value with new one
-		ldrOldValue = ldrValue;
+	// If current vs target brightness is greater than threshold
+	if (diff >= LED_UPDATE_THRESHOLD)
+	{	
+		log("LED brightness update\n");
 
-		// Scale limited LDR value between 1 and 100%
-		uint8_t brightness = SSTD_SCALE(ldrValue, LDR_MIN_VALUE, LDR_MAX_VALUE, LED_MIN_BRIGHTNESS, LED_MAX_BRIGHTNESS);
+		// Determine update direction
+		if (ledTargetBrightness - ledCurrentBrightness > 0) ledBrightnessUpdateDir = led_update_brightness_dir_t::LED_UPDATE_POS;
+			else ledBrightnessUpdateDir = led_update_brightness_dir_t::LED_UPDATE_NEG;
 
-		// Set LED brightness
-		LEDs.brightness(brightness);		
+		// Determine update period
+		ledBrightnessUpdatePeriod = LED_BRIGHTNESS_UPDATE / diff;			
 	}
+	else ledTargetBrightness = ledCurrentBrightness; // Make sure they are equal
 }
 
 void ledSetBrightness(uint8_t value)
@@ -418,6 +422,34 @@ void ledSetBrightness(uint8_t value)
 	// Set LED line update flag
 	ledUpdateFlag = 1;
 }
+
+uint8_t ledNeedUpdate(void)
+{
+	return ledCurrentBrightness != ledTargetBrightness;
+}
+
+void ledUpdateBrightness(void)
+{
+	// LED brightness update is needed
+	if (ledNeedUpdate())
+	{
+		// It's time to update LED brightness
+		if (tick - ledLastUpdateTick >= ledBrightnessUpdatePeriod)
+		{	
+			int8_t value = 1;
+
+			// Update last update tick
+			ledLastUpdateTick = tick;
+
+			// If update direction is negative
+			if (ledBrightnessUpdateDir == led_update_brightness_dir_t::LED_UPDATE_NEG) value = -1;
+
+			// Set new brightness
+			ledSetBrightness(ledCurrentBrightness + value);
+		}
+	}	
+}
+
 
 // ----- STATIC FUNCTION DEFINITIONS
 static uint8_t getCharBitmap(const char c)
