@@ -44,6 +44,8 @@ static uint8_t bleStatus(void);
 
 // ----- VARIABLES
 volatile uint8_t bleConnAltered = 0; /**< @brief Flag for altered BLE connection. */
+uint8_t blePrintRTCFlag = 0; /**< @brief Print RTC time and date over BLE on RTC wakeup. */
+uint8_t blePrintTnHFlag = 0; /**< @brief Print TnH stuff over BLE on RTC wakeup. */
 
 
 // ----- OBJECTS
@@ -79,6 +81,9 @@ void bleInit(void)
 		output[11] = '\0';
 		BLE.getVersion(output);
 		logf("BLE Version: %s\n", output);
+
+		log("BLE sleep\n");
+		BLE.sleep();
 	}
 	else log("BLE init NOT OK!\n");
 }
@@ -134,6 +139,7 @@ void bleGetChar(void)
 			// Replace \r or \n with \0 char
 			BLEInput.write('\0');
 
+			// Copy received bytes from ring buffer to tmp buffer
 			char tmpBuff[BLE_RX_BUFFER];
 			BLEInput.read(tmpBuff, BLEInput.used());
 

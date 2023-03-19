@@ -37,6 +37,8 @@ This License shall be included in all methodal textual files.
 // ----- EXTERNS
 extern sBLE_HM BLE;
 extern volatile uint8_t bleConnAltered;
+extern uint8_t blePrintRTCFlag;
+extern uint8_t blePrintTnHFlag;
 
 
 // ----- FUNCTION DECLARATIONS
