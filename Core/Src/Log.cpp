@@ -65,6 +65,7 @@ static void rttTX(const char* buffer, const uint16_t len);
  * \c uartTX Function for handling \ref SYS_UART transmits.
  */
 sStd::Logger<LOG_BUFF> Serial(uartTX);
+
 #elif LOG_METHOD == 1 // If Sys RTT is used
 /**
  * @brief Logger object.
