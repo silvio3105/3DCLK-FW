@@ -77,6 +77,8 @@ SCMD_HANDLER(reset);
 SCMD_HANDLER(blereset);
 SCMD_HANDLER(info);
 SCMD_HANDLER(set);
+SCMD_HANDLER(rtc_print);
+SCMD_HANDLER(tnh_print);
 
 
 // ----- VARIABLES
@@ -85,7 +87,9 @@ sCMDList cmdList[] = {
 	SCMD_ADD(reset, "Reset the device"),
 	SCMD_ADD(blereset, "Reset BLE module"),
 	SCMD_ADD(info, "Get device info"),
-	SCMD_ADD(set, "Set time and date. Format: [24H/12H],[H],[M],[S]{,AM/PM},[Day(1-7;1=Mon)],[D],[M],[Y]")
+	SCMD_ADD(set, "Set time and date. Format: [24H/12H],[H],[M],[S]{,AM/PM},[Day(1-7;1=Mon)],[D],[M],[Y]"),
+	SCMD_ADD(rtc_print, "Toggle RTC print over BLE"),
+	SCMD_ADD(tnh_print, "Toggle TnH print over BLE")
 };
 
 
@@ -262,6 +266,23 @@ SCMD_HANDLER(set)
 	BLE.print("\n", 1);
 }
 
+SCMD_HANDLER(rtc_print)
+{
+	// Toggle RTC print flag
+	blePrintRTCFlag = !blePrintRTCFlag;
+
+	// Print message over BLE
+	BLE.printf("RTC print is turned %s\n", blePrintRTCFlag ? "on" : "off");
+}
+
+SCMD_HANDLER(tnh_print)
+{
+	// Toggle TnH print flag
+	blePrintTnHFlag = !blePrintTnHFlag;
+
+	// Print message over BLE
+	BLE.printf("TnH print is turned %s\n", blePrintTnHFlag ? "on" : "off");
+}
 
 
 // END WITH NEW LINE
