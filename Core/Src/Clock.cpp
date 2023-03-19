@@ -34,7 +34,12 @@ This License shall be included in all methodal textual files.
 
 
 // ----- VARIABLES
-sRTC_time_t rtcTime;
+sRTC_time_t rtcTime; /**< @brief RTC time and date variable. */
+
+/**
+ * @brief Array with short day names.
+ * 
+ */
 const char clockDays[7][4] = {
 	"Mon",
 	"Tue",
@@ -45,6 +50,10 @@ const char clockDays[7][4] = {
 	"Sun"
 };
 
+/**
+ * @brief Array with time AM and PM tags.
+ * 
+ */
 const char clockAMPM[2][3] = {
 	"AM",
 	"PM"
