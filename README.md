@@ -1,7 +1,7 @@
 
 # 3DCLK Firmware
 
-Soon
+Firmware for 3D Clock device.
 
 
 # LICENSE
