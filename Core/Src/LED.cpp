@@ -152,7 +152,7 @@ ledDisplayInfo ledInfo[LED_INFO_TOTAL] = {
 };
 
 uint8_t ledUpdateFlag = 0; /**< @brief LED update flag. If set, LEDs will be updated. */
-uint8_t ledCurrentBrightness = 0; /**< @brief Current LED line brightness. */
+uint8_t ledCurrentBrightness = 10; /**< @brief Current LED line brightness. */
 uint8_t ledTargetBrightness = 0; /**< @brief Target LED line brightness. */
 led_update_brightness_dir_t ledBrightnessUpdateDir = led_update_brightness_dir_t::LED_UPDATE_POS; /**< @brief LED line brightness update direction indicator. */
 uint16_t ledBrightnessUpdatePeriod = 0; /**< @brief LED brightness update period in ms. */
@@ -252,10 +252,6 @@ void ledInit(void)
 
 			// Set init flag for LED line
 			SSTD_BIT_SET(initFlags, INIT_LED_POS);
-
-			// Turn off LED line
-			LEDs.rgb(ProgLED_rgb_t::BLACK);
-			LEDs.off();
 			break;
 		}
 
@@ -370,7 +366,7 @@ void ledShowRST(void)
 {
 	// Set ERROR color and brightness
 	LEDs.rgb(LED_COLOR_ERROR); // SOON: Replace with custom config
-	LEDs.brightness(LED_BRGHT_ERROR); // SOON: Replace with custom config
+	ledSetBrightness(LED_BRGHT_ERROR, 1); // SOON: Replace with custom config
 
 	// Print RST text
 	ledPrint("-RST"); // SOON: Remove "-" before RST	
@@ -380,7 +376,7 @@ void ledShowBLE(void)
 {
 	// Set BLE connection color and brightness
 	LEDs.rgb(LED_COLOR_BLE_CONN); // SOON: Replace with custom config
-	LEDs.brightness(LED_BRGHT_BLE_CONN); // SOON: Replace with custom config
+	ledSetBrightness(LED_BRGHT_BLE_CONN, 1); // SOON: Replace with custom config
 
 	// Print BLE text
 	ledPrint("-BLE"); // SOON: Remove "-" before BLE	
@@ -411,10 +407,13 @@ void ledCalculateTargetBrightness(void)
 	else ledTargetBrightness = ledCurrentBrightness; // Make sure they are equal
 }
 
-void ledSetBrightness(uint8_t value)
+void ledSetBrightness(uint8_t value, uint8_t setTarget)
 {
 	// Update current LED line brightness
 	ledCurrentBrightness = value;
+
+	// Set target brightness
+	if (setTarget) ledTargetBrightness = value;
 
 	// Set LED line brightness
 	LEDs.brightness(ledCurrentBrightness);
@@ -445,7 +444,7 @@ void ledUpdateBrightness(void)
 			if (ledBrightnessUpdateDir == led_update_brightness_dir_t::LED_UPDATE_NEG) value = -1;
 
 			// Set new brightness
-			ledSetBrightness(ledCurrentBrightness + value);
+			ledSetBrightness(ledCurrentBrightness + value, 0);
 		}
 	}	
 }
