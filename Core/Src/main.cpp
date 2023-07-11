@@ -247,6 +247,8 @@ int main(void)
 	// Enable RTC wake up
 	sClock.wakeupEnable(SYS_WAKEUP_CLOCK);
 
+	log("Roll!\n");
+
 	// Lets roll!
 	while (1)
 	{
@@ -305,9 +307,6 @@ int main(void)
 			// Reset wakeup flag
 			wakeup = 0;
 
-			// Start LDR voltage measuring
-			ldrStart();
-
 			// Decrease TnH tick
 			tnhTicks--;
 
@@ -327,6 +326,9 @@ int main(void)
 			 // If RTC is set
 			if (sClock.isSet())
 			{
+				// Start LDR voltage measure
+				ldrStart();
+
 				// Get RTC time
 				clockGetTime();
 
@@ -335,17 +337,17 @@ int main(void)
 				logRTC();
 				#endif // DEBUG_WAKEUP
 
-				// Get value from LDR - must call before ledCalculateTargetBrightness function
-				ldrGetValue(1);
-
-				// Calculate new LED brightness
-				ledCalculateTargetBrightness();
-
 				// Print RTC over BLE is RTC BLE print is enabled
 				if (blePrintRTCFlag) blePrintRTC();
 
 				// Tick display if BLE is not connected
-				if (BLE.isConnected() == SBLE_NOK) Display.tick();	
+				if (BLE.isConnected() == SBLE_NOK) Display.tick();
+
+				// Get value from LDR - must call before ledCalculateTargetBrightness function
+				ldrGetValue(1);
+
+				// Calculate new LED brightness
+				ledCalculateTargetBrightness();				
 			}
 
 			// Log TnH stuff
