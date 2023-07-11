@@ -709,7 +709,7 @@ class sBLE_HM
 	 */
 	inline void sleep(void)
 	{
-		send("AT+SLEEP", 8, "OK", 2);
+		send("AT+SLEEP", 8, NULL, 0);
 	}
 
 	/**
