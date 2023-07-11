@@ -219,9 +219,10 @@ void ledCalculateTargetBrightness(void);
  * @brief Set LED line brightness.
  * 
  * @param value New LED line brightness(0-100%).
+ * @param setTarget Set to \c 1 if brightness is not set via LDR.
  * @return No return value.
  */
-void ledSetBrightness(uint8_t value);
+void ledSetBrightness(uint8_t value, uint8_t setTarget);
 
 /**
  * @brief Check if LED line needs brightness update.
